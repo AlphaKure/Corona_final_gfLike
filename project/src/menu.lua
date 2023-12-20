@@ -10,25 +10,19 @@ local textField
 -- -----------------------------------------------------------------------------------
 
 local function gotoGame()
-  composer.gotoScene( "game", { time=800, effect="crossFade" } )
+  print(_G.username)
+  if _G.username and _G.username ~= "" then
+    composer.gotoScene( "game", { time=800, effect="crossFade" } )
+   end
 end
+
 
 local function gotoHighScores()
   composer.gotoScene( "highscores", { time=800, effect="crossFade" } )
 end
 
 
-
--- -----------------------------------------------------------------------------------
--- 跟場景有關的寫在這邊
--- -----------------------------------------------------------------------------------
-
--- create()
-function scene:create( event )
-
-  local sceneGroup = self.view
-  -- Code here runs when the scene is first created but has not yet appeared on screen
-
+local function initUI(sceneGroup)
   local background = display.newImageRect( sceneGroup, "resource/menu_background.jpg", 500, 750 )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
@@ -46,8 +40,8 @@ function scene:create( event )
   textField = native.newTextField( display.contentCenterX, 300, 200, 30 )
   textField.placeholder  = "報上你的名號，挑戰者"
   sceneGroup:insert(textField)
-  
   function textField:userInput(event)
+
   if event.phase == "began" then
   
     elseif event.phase == "ended" then
@@ -55,13 +49,27 @@ function scene:create( event )
       _G.username =  textField.text
       print( "使用者輸入的文字是: " .. _G.username )
     elseif event.phase == "editing" then
-  
+      _G.username =  textField.text
     end
 end
   
   textField:addEventListener( "userInput", textField )
   playButton:addEventListener( "tap", gotoGame )
 
+
+end
+
+
+-- -----------------------------------------------------------------------------------
+-- 跟場景有關的寫在這邊
+-- -----------------------------------------------------------------------------------
+
+-- create()
+function scene:create( event )
+
+  local sceneGroup = self.view
+  -- Code here runs when the scene is first created but has not yet appeared on screen
+  
 end
 
 
@@ -73,7 +81,7 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
-
+    initUI(sceneGroup)
   elseif ( phase == "did" ) then
     -- Code here runs when the scene is entirely on screen
 

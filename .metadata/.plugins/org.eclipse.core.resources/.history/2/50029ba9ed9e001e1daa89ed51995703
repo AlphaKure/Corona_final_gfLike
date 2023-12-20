@@ -4,7 +4,7 @@ local native = require( "native" )
 
 
 local scene = composer.newScene()
-local textField
+
 -- -----------------------------------------------------------------------------------
 -- 自訂函式寫在這邊
 -- -----------------------------------------------------------------------------------
@@ -43,12 +43,14 @@ function scene:create( event )
   playButton:setFillColor( 0.82, 0.86, 1 )
   local ButtonText = display.newText( sceneGroup, "塔塔開", display.contentCenterX, 375, native.systemFont, 28 )
     
-  textField = native.newTextField( display.contentCenterX, 300, 200, 30 )
-  textField.placeholder  = "報上你的名號，挑戰者"
-  sceneGroup:insert(textField)
+  local textField = native.newTextField( display.contentCenterX, 300, 200, 30 )
+  textField.text = "報上你的名號，挑戰者"
+  sceneGroup:insert( textField )
+  print(sceneGroup)
   
   function textField:userInput(event)
   if event.phase == "began" then
+  
   
     elseif event.phase == "ended" then
       
@@ -89,8 +91,7 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    native.setKeyboardFocus(nil)
-    textField.isVisible = false
+
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
 

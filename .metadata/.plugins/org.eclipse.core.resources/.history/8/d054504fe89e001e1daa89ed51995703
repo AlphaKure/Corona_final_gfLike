@@ -4,7 +4,7 @@ local native = require( "native" )
 
 
 local scene = composer.newScene()
-local textField
+
 -- -----------------------------------------------------------------------------------
 -- 自訂函式寫在這邊
 -- -----------------------------------------------------------------------------------
@@ -18,6 +18,18 @@ local function gotoHighScores()
 end
 
 
+local function textField(event)
+  if event.phase == "began" then
+
+    elseif event.phase == "ended" then
+      local file = io.open( "user.txt", "w" )
+      if file then
+      file:write( "Hello, world!\n" )
+      file:close()
+    elseif event.phase == "editing" then
+
+    end
+end
 
 -- -----------------------------------------------------------------------------------
 -- 跟場景有關的寫在這邊
@@ -43,23 +55,9 @@ function scene:create( event )
   playButton:setFillColor( 0.82, 0.86, 1 )
   local ButtonText = display.newText( sceneGroup, "塔塔開", display.contentCenterX, 375, native.systemFont, 28 )
     
-  textField = native.newTextField( display.contentCenterX, 300, 200, 30 )
-  textField.placeholder  = "報上你的名號，挑戰者"
-  sceneGroup:insert(textField)
+  local textField = native.newTextField( display.contentCenterX, 300, 200, 30 )
+  textField.text = "報上你的名號，挑戰者"
   
-  function textField:userInput(event)
-  if event.phase == "began" then
-  
-    elseif event.phase == "ended" then
-      
-      _G.username =  textField.text
-      print( "使用者輸入的文字是: " .. _G.username )
-    elseif event.phase == "editing" then
-  
-    end
-end
-  
-  textField:addEventListener( "userInput", textField )
   playButton:addEventListener( "tap", gotoGame )
 
 end
@@ -89,8 +87,7 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    native.setKeyboardFocus(nil)
-    textField.isVisible = false
+
   elseif ( phase == "did" ) then
     -- Code here runs immediately after the scene goes entirely off screen
 

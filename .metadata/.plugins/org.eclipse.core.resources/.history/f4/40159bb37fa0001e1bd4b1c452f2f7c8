@@ -179,6 +179,7 @@ local function initCharacter()
   for i=1,8 do
     myPlayer:addItem()
     myNPC:addItem()
+    print(myPlayer.item[i].name)
   end
  
 end
@@ -272,17 +273,11 @@ local function setPlayerNameText()
     npcNameText2.text = myNPC.name
 end
 
-local function setItemImage()
-  for i =1 , #myPlayer.item  do
-    print(myPlayer.item[i])
-    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-    itemIconRects[i].alpha = 1
-  end
-end
 
 local function hideMessage()
   waitMessage.isVisible = false
 end
+
 
 
 local function gameLoop()
@@ -312,7 +307,7 @@ end
 function scene:show( event )
   initCharacter()
   setPlayerNameText()
-  setItemImage()
+
   hideMessage()
   
   

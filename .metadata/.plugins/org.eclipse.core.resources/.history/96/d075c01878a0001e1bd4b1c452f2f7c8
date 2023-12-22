@@ -148,7 +148,6 @@ local exitButton
 local playerUseItemButton
 local turnText
 local itemButtonRects = {} 
-local itemIconRects ={}
 
 local playerNameBar
 local playerNameBar2
@@ -196,7 +195,7 @@ local function initGameUI(sceneGroup)
   
   playerUseItemButton = display.newImageRect( uiGroup, "resource/game_playerArea.png", 125, 225 )
   playerUseItemButton.x = display.contentCenterX-80
-  playerUseItemButton.y = 130
+  playerUseItemButton.y = 125
   
   playerNameBar = display.newImageRect( uiGroup, "resource/game_namebar.png", 125, 20 )
   playerNameBar.x = display.contentCenterX-80
@@ -235,12 +234,6 @@ local function initGameUI(sceneGroup)
     itemButtonRects[i].x = (display.contentCenterX+35) + (i - 3) * 70  -- 設置 x 座標
     itemButtonRects[i].y = (display.contentCenterY+30)  -- 設置 y 座標
     itemButtonRects[i]:toBack()
-    
-    itemIconRects[i] = display.newImageRect("resource/game_itemButton.png", 40, 40)
-    itemIconRects[i].x = (display.contentCenterX+35) + (i - 3) * 70  -- 設置 x 座標
-    itemIconRects[i].y = (display.contentCenterY+30)  -- 設置 y 座標
-    itemIconRects[i].isHitTestable = false
-    itemIconRects[i].alpha = 1
   end
   
   for i =5,8 do
@@ -248,12 +241,6 @@ local function initGameUI(sceneGroup)
     itemButtonRects[i].x = (display.contentCenterX+35) + (i - 7) * 70  -- 設置 x 座標
     itemButtonRects[i].y = (display.contentCenterY+30)+70  -- 設置 y 座標
     itemButtonRects[i]:toBack()
-    
-    itemIconRects[i] = display.newImageRect("resource/game_itemButton.png", 40, 40)
-    itemIconRects[i].x = (display.contentCenterX+35) + (i - 7) * 70  -- 設置 x 座標
-    itemIconRects[i].y = (display.contentCenterY+30)+70  -- 設置 y 座標
-    itemIconRects[i].isHitTestable = false
-    itemIconRects[i].alpha = 1
   end
   
 
@@ -272,18 +259,16 @@ local function setPlayerNameText()
     npcNameText2.text = myNPC.name
 end
 
-local function setItemImage()
-  for i =1 , #myPlayer.item  do
-    print(myPlayer.item[i])
-    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-    itemIconRects[i].alpha = 1
-  end
-end
 
 local function hideMessage()
   waitMessage.isVisible = false
 end
 
+local function setItemImage()
+  for i =1,#myPlayer.item do
+    --itemButtonRects[i].fill = {type = "image", filename = myPlayer.item[i].imagePath}
+  end
+end
 
 local function gameLoop()
 
@@ -313,7 +298,7 @@ function scene:show( event )
   initCharacter()
   setPlayerNameText()
   setItemImage()
-  hideMessage()
+   local myTimer = timer.performWithDelay(5000,hideMessage()) 
   
   
   

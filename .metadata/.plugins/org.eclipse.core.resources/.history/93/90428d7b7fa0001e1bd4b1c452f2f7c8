@@ -179,6 +179,7 @@ local function initCharacter()
   for i=1,8 do
     myPlayer:addItem()
     myNPC:addItem()
+    print(myPlayer.item[i].name)
   end
  
 end
@@ -240,7 +241,7 @@ local function initGameUI(sceneGroup)
     itemIconRects[i].x = (display.contentCenterX+35) + (i - 3) * 70  -- 設置 x 座標
     itemIconRects[i].y = (display.contentCenterY+30)  -- 設置 y 座標
     itemIconRects[i].isHitTestable = false
-    itemIconRects[i].alpha = 1
+    itemIconRects[i].alpha = 0
   end
   
   for i =5,8 do
@@ -253,7 +254,7 @@ local function initGameUI(sceneGroup)
     itemIconRects[i].x = (display.contentCenterX+35) + (i - 7) * 70  -- 設置 x 座標
     itemIconRects[i].y = (display.contentCenterY+30)+70  -- 設置 y 座標
     itemIconRects[i].isHitTestable = false
-    itemIconRects[i].alpha = 1
+    itemIconRects[i].alpha = 0
   end
   
 
@@ -272,18 +273,20 @@ local function setPlayerNameText()
     npcNameText2.text = myNPC.name
 end
 
-local function setItemImage()
-  for i =1 , #myPlayer.item  do
-    print(myPlayer.item[i])
-    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-    itemIconRects[i].alpha = 1
-  end
-end
 
 local function hideMessage()
   waitMessage.isVisible = false
 end
 
+local currentIndex = 1
+
+local function setItemImage()
+  for i =1 , #myPlayer  do
+    print(myPlayer.item[i])
+    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+    itemIconRects[i].alpha = 1
+  end
+end
 
 local function gameLoop()
 
@@ -313,7 +316,7 @@ function scene:show( event )
   initCharacter()
   setPlayerNameText()
   setItemImage()
-  hideMessage()
+  local myTimer = timer.performWithDelay(5000,hideMessage()) 
   
   
   

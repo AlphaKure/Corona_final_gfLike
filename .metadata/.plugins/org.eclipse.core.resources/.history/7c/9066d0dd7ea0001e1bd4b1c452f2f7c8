@@ -272,18 +272,20 @@ local function setPlayerNameText()
     npcNameText2.text = myNPC.name
 end
 
-local function setItemImage()
-  for i =1 , #myPlayer.item  do
-    print(myPlayer.item[i])
-    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-    itemIconRects[i].alpha = 1
-  end
-end
 
 local function hideMessage()
   waitMessage.isVisible = false
 end
 
+local currentIndex = 1
+
+local function setItemImage()
+  for i =1 , #myPlayer  do
+    print(myPlayer.item[i])
+    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+    itemIconRects[i].alpha = 1
+  end
+end
 
 local function gameLoop()
 
@@ -313,7 +315,7 @@ function scene:show( event )
   initCharacter()
   setPlayerNameText()
   setItemImage()
-  hideMessage()
+  local myTimer = timer.performWithDelay(5000,hideMessage()) 
   
   
   

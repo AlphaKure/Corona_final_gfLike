@@ -179,6 +179,7 @@ local function initCharacter()
   for i=1,8 do
     myPlayer:addItem()
     myNPC:addItem()
+    print(myPlayer.item[i].name)
   end
  
 end
@@ -273,10 +274,8 @@ local function setPlayerNameText()
 end
 
 local function setItemImage()
-  for i =1 , #myPlayer.item  do
+  for i =1 , #myPlayer  do
     print(myPlayer.item[i])
-    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-    itemIconRects[i].alpha = 1
   end
 end
 

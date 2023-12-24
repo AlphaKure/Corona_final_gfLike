@@ -399,9 +399,8 @@ end
 local function setItemImage()
     for i=1,#myPlayer.item do
       itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
+      transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250,onComplete = hideMessage()  })
     end
-    timer.performWithDelay(4000, hideMessage())
 end
 
 
@@ -438,6 +437,7 @@ local phase = event.phase
     showMessage()
   elseif phase == "did" then
     setItemImage()
+    hideMessage()
   end
   
 end

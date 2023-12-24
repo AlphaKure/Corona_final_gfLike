@@ -389,22 +389,27 @@ local function setText()
     
 end
 
+local function setItemImage(i)
+    for i=1,#myPlayer.item do
+      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+    end
+    transition.fadeIn( itemIconRects[1], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[2], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[3], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[4], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[5], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[6], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[7], { delay = 500, time = 250 })
+    transition.fadeIn( itemIconRects[8], { delay = 500, time = 250 })
+
+end
+
 local function hideMessage()
   waitMessage.isVisible = false
 end
 local function showMessage()
   waitMessage.isVisible = true
 end
-
-local function setItemImage()
-    for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
-    end
-    timer.performWithDelay(4000, hideMessage())
-end
-
-
 
 local function gameLoop()
 
@@ -437,7 +442,8 @@ local phase = event.phase
     setText()
     showMessage()
   elseif phase == "did" then
-    setItemImage()
+    setItemImage(1)
+    hideMessage()
   end
   
 end

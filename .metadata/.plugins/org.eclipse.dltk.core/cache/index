@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
-<cache:CacheIndex xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:cache="http://eclipse.org/dltk/cache_model" lastIndex="34" environment="org.eclipse.dltk.core.environment.localEnvironment">
-  <entries path="F:/program/Corona_final_gfLike/project/src/config.lua" timestamp="1703008876570" lastAccessTime="1703212327068">
-    <attributes name="indexed" location="2838196607/3465356212/9.idx"/>
+<cache:CacheIndex xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:cache="http://eclipse.org/dltk/cache_model" lastIndex="46" environment="org.eclipse.dltk.core.environment.localEnvironment">
+  <entries path="F:/program/Corona_final_gfLike/project/src/build.settings" timestamp="1703008876574" lastAccessTime="1703389278261"/>
+  <entries path="F:/program/Corona_final_gfLike/project/src" timestamp="1703390564865" lastAccessTime="1703393865109">
+    <attributes name=".dltk.core.archive.cache.lastaccess" location="2838196607/4131009279/45.idx"/>
   </entries>
-  <entries path="F:/program/Corona_final_gfLike/project/src/build.settings" timestamp="1703008876574" lastAccessTime="1703212327049"/>
-  <entries path="F:/program/Corona_final_gfLike/project/src" timestamp="1703042511689" lastAccessTime="1703218142917">
-    <attributes name=".dltk.core.archive.cache.lastaccess" location="2838196607/4131009279/15.idx"/>
-  </entries>
-  <entries path="F:/program/Corona_final_gfLike/project/src/menu.lua" timestamp="1703093744185" lastAccessTime="1703212327101">
-    <attributes name="indexed" location="2838196607/3465356212/31.idx"/>
-  </entries>
-  <entries path="F:/program/Corona_final_gfLike/project/src/resource" timestamp="1703172108613" lastAccessTime="1703212327050"/>
 </cache:CacheIndex>

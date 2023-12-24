@@ -401,7 +401,7 @@ local function setItemImage()
       itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
       transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
     end
-    timer.performWithDelay(4000, hideMessage())
+    timer.performWithDelay(4000, hideMessage(), 1)
 end
 
 

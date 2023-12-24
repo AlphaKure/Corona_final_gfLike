@@ -1,7 +1,7 @@
 
 local composer = require( "composer" )
 local socket = require("socket")
-local transition = require("transition")
+
 local scene = composer.newScene()
 
 -- -----------------------------------------------------------------------------------
@@ -389,22 +389,19 @@ local function setText()
     
 end
 
+local function setItemImage(i)
+  if i <= #myPlayer.item then
+    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+    transition.fadeIn( image, { delay = 5000, time = 250,onComplete=setItemImage(i+1) })
+  end
+end
+
 local function hideMessage()
   waitMessage.isVisible = false
 end
 local function showMessage()
   waitMessage.isVisible = true
 end
-
-local function setItemImage()
-    for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
-    end
-    timer.performWithDelay(4000, hideMessage())
-end
-
-
 
 local function gameLoop()
 
@@ -437,7 +434,8 @@ local phase = event.phase
     setText()
     showMessage()
   elseif phase == "did" then
-    setItemImage()
+    setItemImage(1)
+    hideMessage()
   end
   
 end

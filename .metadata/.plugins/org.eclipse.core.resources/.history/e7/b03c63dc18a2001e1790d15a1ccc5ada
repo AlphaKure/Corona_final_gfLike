@@ -400,8 +400,10 @@ local function setItemImage()
     for i=1,#myPlayer.item do
       itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
       transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
+      if i == 8 then
+        hideMessage()
+      end
     end
-    timer.performWithDelay(4000, hideMessage())
 end
 
 

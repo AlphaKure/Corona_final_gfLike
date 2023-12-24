@@ -1,7 +1,7 @@
 
 local composer = require( "composer" )
 local socket = require("socket")
-local transition = require("transition")
+
 local scene = composer.newScene()
 
 -- -----------------------------------------------------------------------------------
@@ -264,9 +264,7 @@ local showAttackIcon
 local waitMessage
 
 local function endGame()
-
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
-  
 end
 
 function generateRandomChineseName(length)
@@ -318,16 +316,16 @@ local function initGameUI(sceneGroup)
   playerNameBar2.y = display.contentCenterY+160
   
   playerNameText2 = display.newText( uiGroup, "player",display.contentCenterX-70, display.contentCenterY+160, native.systemFont, 12 )
-  playerHealthText = display.newText( uiGroup, "HP:",display.contentCenterX-35, display.contentCenterY+160, native.systemFont, 12 )
-  playerPPText = display.newText( uiGroup, "PP:",display.contentCenterX, display.contentCenterY+160, native.systemFont, 12 )
-  playerMoneyText = display.newText( uiGroup, "MONEY:",display.contentCenterX+50, display.contentCenterY+160, native.systemFont, 12 )
+  playerHealthText = display.newText( uiGroup, "HP:0",display.contentCenterX-30, display.contentCenterY+160, native.systemFont, 12 )
+  playerPPText = display.newText( uiGroup, "PP:0",display.contentCenterX, display.contentCenterY+160, native.systemFont, 12 )
+  playerMoneyText = display.newText( uiGroup, "MONEY:0",display.contentCenterX+50, display.contentCenterY+160, native.systemFont, 12 )
   
   npcNameBar = display.newImageRect( uiGroup, "resource/game_namebar.png", 180, 30 )
   npcNameBar.x = display.contentCenterX
   npcNameBar.y = display.contentCenterY+200
   
   npcNameText2 = display.newText( uiGroup, "player",display.contentCenterX-70, display.contentCenterY+200, native.systemFont, 12 )
-  npcHealthText = display.newText( uiGroup, "HP:0",display.contentCenterX-35, display.contentCenterY+200, native.systemFont, 12 )
+  npcHealthText = display.newText( uiGroup, "HP:0",display.contentCenterX-30, display.contentCenterY+200, native.systemFont, 12 )
   npcPPText = display.newText( uiGroup, "PP:0",display.contentCenterX, display.contentCenterY+200, native.systemFont, 12 )
   npcMoneyText = display.newText( uiGroup, "MONEY:0",display.contentCenterX+50, display.contentCenterY+200, native.systemFont, 12 )
   
@@ -384,26 +382,22 @@ local function setText()
 
     playerHealthText.text ="HP:"..myPlayer.health
     playerPPText.text = "MP:".. myPlayer.MP
-    playerMoneyText.text = "MONEY:".. myPlayer.money
+    playerMoneyText.text = "Money:".. myPlayer.money
     npcNameText2.text = myNPC.name
     
+end
+
+local function setItemImage(i)
+  if i <= #myPlayer.item then
+    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+    transition.fadeIn(itemIconRects[i], {time = 100})
+    timer.performWithDelay(2000,setItemImage(i+1))
+  end
 end
 
 local function hideMessage()
   waitMessage.isVisible = false
 end
-local function showMessage()
-  waitMessage.isVisible = true
-end
-
-local function setItemImage()
-    for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
-    end
-    timer.performWithDelay(4000, hideMessage())
-end
-
 
 
 local function gameLoop()
@@ -423,6 +417,7 @@ end
 function scene:create( event )
   local sceneGroup = self.view
   initGameUI(sceneGroup)
+
   
   
 end
@@ -430,22 +425,18 @@ end
 
 -- show()
 function scene:show( event )
-local sceneGroup = self.view
-local phase = event.phase
-  if phase == "will" then
-    initCharacter()
-    setText()
-    showMessage()
-  elseif phase == "did" then
-    setItemImage()
-  end
+  initCharacter()
+  setText()
+  setItemImage(1)
+  hideMessage()
+  
+  
   
 end
 
 
 -- hide()
 function scene:hide( event )
-
 
 end
 
@@ -456,8 +447,6 @@ function scene:destroy( event )
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
   myPlayer:removeSelf()
-  myNPC:removeSelf()
-  
 end
 
 

@@ -1,7 +1,7 @@
 
 local composer = require( "composer" )
 local socket = require("socket")
-local transition = require("transition")
+
 local scene = composer.newScene()
 
 -- -----------------------------------------------------------------------------------
@@ -389,21 +389,17 @@ local function setText()
     
 end
 
+local function setItemImage(i)
+  if i <= #myPlayer.item then
+    itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+    transition.fadeIn(itemIconRects[i], {time = 100})
+    timer.performWithDelay(2000,setItemImage(i+1))
+  end
+end
+
 local function hideMessage()
   waitMessage.isVisible = false
 end
-local function showMessage()
-  waitMessage.isVisible = true
-end
-
-local function setItemImage()
-    for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*500, time = 250, })
-    end
-    timer.performWithDelay(4000, hideMessage())
-end
-
 
 
 local function gameLoop()
@@ -423,6 +419,7 @@ end
 function scene:create( event )
   local sceneGroup = self.view
   initGameUI(sceneGroup)
+
   
   
 end
@@ -430,14 +427,13 @@ end
 
 -- show()
 function scene:show( event )
-local sceneGroup = self.view
 local phase = event.phase
   if phase == "will" then
     initCharacter()
     setText()
-    showMessage()
   elseif phase == "did" then
-    setItemImage()
+    setItemImage(1)
+    hideMessage()
   end
   
 end
@@ -445,8 +441,7 @@ end
 
 -- hide()
 function scene:hide( event )
-
-
+  composer.removeScene(scene)
 end
 
 
@@ -457,6 +452,8 @@ function scene:destroy( event )
   -- Code here runs prior to the removal of scene's view
   myPlayer:removeSelf()
   myNPC:removeSelf()
+  display.remove(uiGroup)
+  composer.removeScene(scene)
   
 end
 

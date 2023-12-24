@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<section name="CallHierarchySearchScope">
+	</section>
 	<section name="org.eclipse.dltk.internal.ui.scriptview.ScriptExplorerPart">
 		<item value="1" key="layout"/>
 		<item value="true" key="group_libraries"/>

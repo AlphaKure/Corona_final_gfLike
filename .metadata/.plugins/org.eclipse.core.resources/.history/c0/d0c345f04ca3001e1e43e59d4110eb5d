@@ -250,7 +250,7 @@ local playerUseItemButton
 local turnText
 local itemButtonRects = {} 
 local itemIconRects ={}
-local itemButtonIsClick={false,false,false,false,false,false,false,false}
+local itemButtonIsClick
 local background
 
 local playerNameBar

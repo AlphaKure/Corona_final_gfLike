@@ -250,7 +250,6 @@ local playerUseItemButton
 local turnText
 local itemButtonRects = {} 
 local itemIconRects ={}
-local itemButtonIsClick={false,false,false,false,false,false,false,false}
 local background
 
 local playerNameBar
@@ -269,7 +268,7 @@ local showAttackIcon
 local waitMessage
 
 local function endGame()
-  
+
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
   
 end
@@ -305,7 +304,7 @@ local npcItemQueue={}
 
 
 
---當點選道具時，更新UI上的道具欄位顯示
+
 local function setplayerItemInfo(item)
   local maxY =display.contentCenterY-360
   local minY =display.contentCenterY-520
@@ -327,12 +326,12 @@ local function setplayerItemInfo(item)
     local currentY = minY
       for i=1, #playerItemQueue do
         print(allItemInfoGroup[i].y)
-        transition.to( allItemInfoGroup[i], { time=200, y=currentY} )
         currentY = currentY + curYDelta
+        allItemInfoGroup[i].y = currentY
         print(allItemInfoGroup[i].y)
       end
     else
-      transition.to( allItemInfoGroup[#playerItemQueue], { time=200, y=minY + (#playerItemQueue - 1) * (40 + 5)} )
+       allItemInfoGroup[#playerItemQueue].y = minY + (#playerItemQueue - 1) * (40 + 5)
     end
     
    print(totalHeight > (maxY - minY))
@@ -340,19 +339,11 @@ local function setplayerItemInfo(item)
 end
 
 
---處理道具邏輯
-local function itemLogicHandler(buttonIndex)
-  table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-end
-
 
 local function onButtonTap(buttonIndex)
     return function(event)
-      if itemButtonIsClick[buttonIndex] == false then
-        itemLogicHandler(buttonIndex)
-        setplayerItemInfo(myPlayer.item[buttonIndex])
-        itemButtonIsClick[buttonIndex] = true
-      end
+      table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+      setplayerItemInfo(myPlayer.item[buttonIndex])
     end
 end
 
@@ -478,23 +469,6 @@ local function setItemImage()
     timer.performWithDelay(4000, hideMessage)
 end
 
---hide時，重置scene上的元素
-local function reset()
-  itemButtonIsClick={false,false,false,false,false,false,false,false}
-  playerItemQueue={}
-  npcItemQueue={}
-
-  myPlayer = nil
-  myNPC= nil  
-  
-    if allItemInfoGroup then
-      while allItemInfoGroup.numChildren > 0 do
-        local child = allItemInfoGroup[1]
-        child:removeSelf()
-      end
-    end
-    
-end
 
 local function gameLoop()
 
@@ -540,10 +514,14 @@ function scene:hide( event )
 local phase = event.phase
 
   if phase == "will" then
-
+    playerItemQueue={}
+    npcItemQueue={}
+    allItemInfoGroup:removeSelf()
+    myPlayer = nil
+    myNPC= nil
     
   elseif phase == "did" then
-    reset()
+  
   end
 end
 

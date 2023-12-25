@@ -269,7 +269,7 @@ local showAttackIcon
 local waitMessage
 
 local function endGame()
-  
+
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
   
 end
@@ -478,23 +478,6 @@ local function setItemImage()
     timer.performWithDelay(4000, hideMessage)
 end
 
---hide時，重置scene上的元素
-local function reset()
-  itemButtonIsClick={false,false,false,false,false,false,false,false}
-  playerItemQueue={}
-  npcItemQueue={}
-
-  myPlayer = nil
-  myNPC= nil  
-  
-    if allItemInfoGroup then
-      while allItemInfoGroup.numChildren > 0 do
-        local child = allItemInfoGroup[1]
-        child:removeSelf()
-      end
-    end
-    
-end
 
 local function gameLoop()
 
@@ -543,7 +526,16 @@ local phase = event.phase
 
     
   elseif phase == "did" then
-    reset()
+    playerItemQueue={}
+    npcItemQueue={}
+    if allItemInfoGroup then
+      while allItemInfoGroup.numChildren > 0 do
+        local child = allItemInfoGroup[1]
+        child:removeSelf()
+      end
+    end
+    myPlayer = nil
+    myNPC= nil  
   end
 end
 

@@ -250,7 +250,6 @@ local playerUseItemButton
 local turnText
 local itemButtonRects = {} 
 local itemIconRects ={}
-local itemButtonIsClick={false,false,false,false,false,false,false,false}
 local background
 
 local playerNameBar
@@ -269,7 +268,7 @@ local showAttackIcon
 local waitMessage
 
 local function endGame()
-  
+
   composer.gotoScene( "menu", { time=800, effect="crossFade" } )
   
 end
@@ -301,58 +300,50 @@ local playerItemQueue={}
 local npcItemQueue={}
 
 
-
-
-
-
---當點選道具時，更新UI上的道具欄位顯示
 local function setplayerItemInfo(item)
-  local maxY =display.contentCenterY-360
-  local minY =display.contentCenterY-520
+  local maxY =display.contentCenterY-1000
+  local minY =display.contentCenterY-360
+  local curYDelta = (maxY-minY)/#playerItemQueue
+  local curYDelta2 = 50
+  local curYAdd = maxY
   local totalHeight = #playerItemQueue * (40 + 5) - 5
-  local curYDelta = (maxY- minY)/(#playerItemQueue)
+  
   
   local itemInfoGroup = display.newGroup()
   allItemInfoGroup:insert(itemInfoGroup)
   local itemInfoBgRect = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 100, 40)
   itemInfoBgRect.x = display.contentCenterX
   itemInfoBgRect.y = display.contentCenterY
-  local itemInfoIcon = display.newImageRect(itemInfoGroup,item.imagePath, 40, 40)
+  local itemInfoIcon = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 40, 40)
   itemInfoIcon.x = display.contentCenterX-65
   itemInfoIcon.y = display.contentCenterY
-  local itemInfoNameText = display.newText(itemInfoGroup,item.name,display.contentCenterX-15, display.contentCenterY-9, native.systemFont, 14 )
+  local itemInfoNameText = display.newText(itemInfoGroup,"TestItem",display.contentCenterX-15, display.contentCenterY-9, native.systemFont, 14 )
   local itemInfoDescriptText = display.newText(itemInfoGroup,"TestDescribe",display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
   itemInfoGroup.x = display.contentCenterX-220
-  if totalHeight > (maxY - minY) then
-    local currentY = minY
-      for i=1, #playerItemQueue do
-        print(allItemInfoGroup[i].y)
-        transition.to( allItemInfoGroup[i], { time=200, y=currentY} )
-        currentY = currentY + curYDelta
-        print(allItemInfoGroup[i].y)
-      end
+    if totalHeight > (maxY - minY) then
+        local currentY = minY
+        for i=1, #playerItemQueue do
+            allItemInfoGroup[i].y = currentY
+            currentY = currentY + 40 + 5
+        end
     else
-      transition.to( allItemInfoGroup[#playerItemQueue], { time=200, y=minY + (#playerItemQueue - 1) * (40 + 5)} )
+        -- 否则，按照固定排列
+        for i=1,#playerItemQueue do
+            
+            allItemInfoGroup[i].y = minY + (i - 1) * (40 + 5)
+        end
     end
     
-   print(totalHeight > (maxY - minY))
+   print(totalHeight)
  
 end
 
 
---處理道具邏輯
-local function itemLogicHandler(buttonIndex)
-  table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-end
-
 
 local function onButtonTap(buttonIndex)
     return function(event)
-      if itemButtonIsClick[buttonIndex] == false then
-        itemLogicHandler(buttonIndex)
-        setplayerItemInfo(myPlayer.item[buttonIndex])
-        itemButtonIsClick[buttonIndex] = true
-      end
+      table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+      setplayerItemInfo(myPlayer.item[buttonIndex])
     end
 end
 
@@ -478,23 +469,6 @@ local function setItemImage()
     timer.performWithDelay(4000, hideMessage)
 end
 
---hide時，重置scene上的元素
-local function reset()
-  itemButtonIsClick={false,false,false,false,false,false,false,false}
-  playerItemQueue={}
-  npcItemQueue={}
-
-  myPlayer = nil
-  myNPC= nil  
-  
-    if allItemInfoGroup then
-      while allItemInfoGroup.numChildren > 0 do
-        local child = allItemInfoGroup[1]
-        child:removeSelf()
-      end
-    end
-    
-end
 
 local function gameLoop()
 
@@ -537,14 +511,9 @@ end
 
 -- hide()
 function scene:hide( event )
-local phase = event.phase
+  playerItemQueue={}
+  npcItemQueue={}
 
-  if phase == "will" then
-
-    
-  elseif phase == "did" then
-    reset()
-  end
 end
 
 
@@ -553,8 +522,9 @@ function scene:destroy( event )
 
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-
-
+  myPlayer:removeSelf()
+  myNPC:removeSelf()
+  uiGroup:removeSelf()
   
 end
 

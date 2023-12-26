@@ -252,7 +252,6 @@ local itemButtonRects = {}
 local itemIconRects ={}
 local itemButtonIsClick={false,false,false,false,false,false,false,false}
 local background
-local overlay
 
 local playerNameBar
 local playerNameBar2
@@ -303,7 +302,6 @@ end
 local playerItemQueue={}
 local npcItemQueue={}
 
---更新UI上的道具欄位顯示
 local function updateItemInfoUI()
   local maxY =display.contentCenterY-320
   local minY =display.contentCenterY-520
@@ -323,7 +321,7 @@ local function updateItemInfoUI()
     end
 
 end
---當點選新道具時，增加UI元素
+--當點選道具時，更新UI上的道具欄位顯示
 local function setplayerItemInfo(item)
 
   
@@ -367,21 +365,9 @@ local function onItemButtonTap(buttonIndex)
     end
 end
 
-
-local function attackHandler()
-  showAttackIcon.isVisible = true
-end
-
-
-local function onAttackerAreaTap(event)
-  if event.phase == "began" then
-    overlay.alpha = 0.3  
-
-  end
-  if event.phase == "ended" then
-   overlay.alpha = 0
-   attackHandler()
-  end
+local function onAttackerAreaTap()
+  attackerButton:setFillColor(0.5, 0.5, 0.5)
+  countdownTimer = timer.performWithDelay(200,attackerButton:setFillColor(0.5, 0.5, 0.5))
 
 end
 
@@ -405,12 +391,7 @@ local function initGameUI(sceneGroup)
   attackerButton = display.newImageRect( uiGroup, "resource/game_playerArea.png", 125, 225 )
   attackerButton.x = display.contentCenterX-80
   attackerButton.y = 130
-  attackerButton:addEventListener( "touch", onAttackerAreaTap)
-  
-  overlay = display.newRect(display.contentCenterX-80, 130, 130, 230)
-  overlay:setFillColor(1, 1, 1)
-  overlay.isHitTestable = false
-  overlay.alpha = 0
+  attackerButton:addEventListener( "tap", onAttackerAreaTap)
   
   playerNameBar = display.newImageRect( uiGroup, "resource/game_namebar.png", 125, 20 )
   playerNameBar.x = display.contentCenterX-80

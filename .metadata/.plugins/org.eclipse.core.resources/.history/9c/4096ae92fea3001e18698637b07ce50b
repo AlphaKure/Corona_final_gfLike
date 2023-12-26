@@ -246,13 +246,12 @@ local allItemInfoGroup
 
 
 local exitButton
-local attackerButton
+local playerUseItemButton
 local turnText
 local itemButtonRects = {} 
 local itemIconRects ={}
 local itemButtonIsClick={false,false,false,false,false,false,false,false}
 local background
-local overlay
 
 local playerNameBar
 local playerNameBar2
@@ -262,8 +261,6 @@ local playerHealthText
 local playerPPText
 local playerMoneyText
 local npcNameBar
-local npcNameBarUp
-local npcNameTextUp
 local npcNameText2
 local npcHealthText
 local npcPPText
@@ -303,7 +300,9 @@ end
 local playerItemQueue={}
 local npcItemQueue={}
 
---更新UI上的道具欄位顯示
+
+
+
 local function updateItemInfoUI()
   local maxY =display.contentCenterY-320
   local minY =display.contentCenterY-520
@@ -317,13 +316,11 @@ local function updateItemInfoUI()
         currentY = currentY + curYDelta
       end
     else
-      for i=1, #playerItemQueue do
-        transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
-      end
+      transition.to( allItemInfoGroup[#playerItemQueue], { time=200, y=minY + (#playerItemQueue - 1) * (40 + 5)} )
     end
 
 end
---當點選新道具時，增加UI元素
+--當點選道具時，更新UI上的道具欄位顯示
 local function setplayerItemInfo(item)
 
   
@@ -349,7 +346,7 @@ local function itemLogicHandler(buttonIndex)
 end
 
 
-local function onItemButtonTap(buttonIndex)
+local function onButtonTap(buttonIndex)
     return function(event)
       if itemButtonIsClick[buttonIndex] == false then
         itemLogicHandler(buttonIndex)
@@ -367,32 +364,10 @@ local function onItemButtonTap(buttonIndex)
     end
 end
 
-
-local function attackHandler()
-  showAttackIcon.isVisible = true
-end
-
-
-local function onAttackerAreaTap(event)
-  if event.phase == "began" then
-    overlay.alpha = 0.3  
-
-  end
-  if event.phase == "ended" then
-   overlay.alpha = 0
-   attackHandler()
-  end
-
-end
-
-
 local function initGameUI(sceneGroup)
   uiGroup = display.newGroup()
   waitMessage = display.newGroup()
   allItemInfoGroup = display.newGroup()
-  allItemInfoGroup.isHitTestable = false
-  
-  
   sceneGroup:insert( uiGroup )
   sceneGroup:insert(waitMessage)
   sceneGroup:insert(allItemInfoGroup)
@@ -402,15 +377,9 @@ local function initGameUI(sceneGroup)
   background.y = display.contentCenterY
   turnText = display.newText( uiGroup, "TURN: " .. turn, display.contentCenterX, -20, native.systemFont, 20 )
   
-  attackerButton = display.newImageRect( uiGroup, "resource/game_playerArea.png", 125, 225 )
-  attackerButton.x = display.contentCenterX-80
-  attackerButton.y = 130
-  attackerButton:addEventListener( "touch", onAttackerAreaTap)
-  
-  overlay = display.newRect(display.contentCenterX-80, 130, 130, 230)
-  overlay:setFillColor(1, 1, 1)
-  overlay.isHitTestable = false
-  overlay.alpha = 0
+  playerUseItemButton = display.newImageRect( uiGroup, "resource/game_playerArea.png", 125, 225 )
+  playerUseItemButton.x = display.contentCenterX-80
+  playerUseItemButton.y = 130
   
   playerNameBar = display.newImageRect( uiGroup, "resource/game_namebar.png", 125, 20 )
   playerNameBar.x = display.contentCenterX-80
@@ -439,11 +408,6 @@ local function initGameUI(sceneGroup)
   npcPPText = display.newText( uiGroup, "PP:0",display.contentCenterX, display.contentCenterY+200, native.systemFont, 12 )
   npcMoneyText = display.newText( uiGroup, "MONEY:0",display.contentCenterX+50, display.contentCenterY+200, native.systemFont, 12 )
   
-  npcNameBarUp = display.newImageRect( uiGroup, "resource/game_namebar.png", 125, 20 )
-  npcNameBarUp.x = display.contentCenterX+80
-  npcNameBarUp.y = 5
-  npcNameTextUp = display.newText( uiGroup, "NPC",display.contentCenterX+75, 5, native.systemFont, 12 )
-    
   exitButton = display.newImageRect( uiGroup, "resource/game_exitButton.png", 20, 20 )
   exitButton.x = display.contentCenterX-125
   exitButton.y = -20
@@ -460,7 +424,7 @@ local function initGameUI(sceneGroup)
     itemButtonRects[i].x = (display.contentCenterX+35) + (i - 3) * 70  -- 設置 x 座標
     itemButtonRects[i].y = (display.contentCenterY+30)  -- 設置 y 座標
     itemButtonRects[i]:toBack()
-    itemButtonRects[i]:addEventListener( "tap", onItemButtonTap(i) )
+    itemButtonRects[i]:addEventListener( "tap", onButtonTap(i) )
     
     itemIconRects[i] = display.newImageRect(uiGroup,"resource/game_itemButton.png", 40, 40)
     itemIconRects[i].x = (display.contentCenterX+35) + (i - 3) * 70  -- 設置 x 座標
@@ -474,7 +438,7 @@ local function initGameUI(sceneGroup)
     itemButtonRects[i].x = (display.contentCenterX+35) + (i - 7) * 70  -- 設置 x 座標
     itemButtonRects[i].y = (display.contentCenterY+30)+70  -- 設置 y 座標
     itemButtonRects[i]:toBack()
-    itemButtonRects[i]:addEventListener( "tap", onItemButtonTap(i) )
+    itemButtonRects[i]:addEventListener( "tap", onButtonTap(i) )
     
     itemIconRects[i] = display.newImageRect(uiGroup,"resource/game_itemButton.png", 40, 40)
     itemIconRects[i].x = (display.contentCenterX+35) + (i - 7) * 70  -- 設置 x 座標
@@ -501,7 +465,6 @@ local function setText()
     playerPPText.text = "MP:".. myPlayer.MP
     playerMoneyText.text = "MONEY:".. myPlayer.money
     npcNameText2.text = myNPC.name
-    npcNameTextUp.text = myNPC.name
     npcHealthText.text ="HP:"..myNPC.health
     npcPPText.text = "MP:".. myNPC.MP
     npcMoneyText.text = "MONEY:".. myNPC.money

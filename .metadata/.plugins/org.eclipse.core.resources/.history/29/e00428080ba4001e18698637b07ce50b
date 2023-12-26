@@ -368,19 +368,15 @@ local function onItemButtonTap(buttonIndex)
 end
 
 
-local function attackHandler()
-  showAttackIcon.isVisible = true
-end
-
 
 local function onAttackerAreaTap(event)
   if event.phase == "began" then
-    overlay.alpha = 0.3  
+        overlay.alpha = 0.3  
 
   end
   if event.phase == "ended" then
    overlay.alpha = 0
-   attackHandler()
+   showAttackIcon.isVisible = true
   end
 
 end

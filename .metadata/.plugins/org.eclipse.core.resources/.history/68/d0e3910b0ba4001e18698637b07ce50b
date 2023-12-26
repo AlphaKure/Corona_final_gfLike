@@ -375,7 +375,7 @@ end
 
 local function onAttackerAreaTap(event)
   if event.phase == "began" then
-    overlay.alpha = 0.3  
+        overlay.alpha = 0.3  
 
   end
   if event.phase == "ended" then

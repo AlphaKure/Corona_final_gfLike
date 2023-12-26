@@ -368,21 +368,11 @@ local function onItemButtonTap(buttonIndex)
 end
 
 
-local function attackHandler()
-  showAttackIcon.isVisible = true
-end
-
 
 local function onAttackerAreaTap(event)
-  if event.phase == "began" then
-    overlay.alpha = 0.3  
 
-  end
-  if event.phase == "ended" then
-   overlay.alpha = 0
-   attackHandler()
-  end
-
+  transition.fadeIn( overlay, {time = 50})
+  transition.fadeOut( overlay, {time = 50,delay = 100})
 end
 
 
@@ -405,7 +395,7 @@ local function initGameUI(sceneGroup)
   attackerButton = display.newImageRect( uiGroup, "resource/game_playerArea.png", 125, 225 )
   attackerButton.x = display.contentCenterX-80
   attackerButton.y = 130
-  attackerButton:addEventListener( "touch", onAttackerAreaTap)
+  attackerButton:addEventListener( "tap", onAttackerAreaTap)
   
   overlay = display.newRect(display.contentCenterX-80, 130, 130, 230)
   overlay:setFillColor(1, 1, 1)

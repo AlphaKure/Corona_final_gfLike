@@ -368,19 +368,15 @@ local function onItemButtonTap(buttonIndex)
 end
 
 
-local function attackHandler()
-  showAttackIcon.isVisible = true
-end
-
 
 local function onAttackerAreaTap(event)
   if event.phase == "began" then
-    overlay.alpha = 0.3  
-
+   transition.fadeIn( overlay, {time = 50,alpha = 0.3,onComplete = function()
+        overlay.alpha = 0.3  
+    end}) 
   end
   if event.phase == "ended" then
-   overlay.alpha = 0
-   attackHandler()
+   transition.fadeOut( overlay, {time = 50,delay = 100})   
   end
 
 end

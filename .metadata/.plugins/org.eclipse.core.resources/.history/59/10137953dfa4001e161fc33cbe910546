@@ -400,7 +400,7 @@ local function playerTurn()
   for i=1,# myPlayer.item do
     print( getmetatable(myPlayer.item[i]).__index)
     if getmetatable(myPlayer.item[i]).__index == Armor then
-       itemButtonTouchable[i] = false
+        
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
     end  
   end

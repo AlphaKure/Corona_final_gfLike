@@ -251,7 +251,6 @@ local turnText
 local itemButtonRects = {} 
 local itemIconRects ={}
 local itemButtonIsClick={false,false,false,false,false,false,false,false}
-local itemButtonTouchable={true,true,true,true,true,true,true,true}
 local background
 local overlay
 
@@ -352,7 +351,6 @@ end
 
 local function onItemButtonTap(buttonIndex)
     return function(event)
-    if itemButtonTouchable[buttonIndex] == true then
       if itemButtonIsClick[buttonIndex] == false then
         itemLogicHandler(buttonIndex)
         setplayerItemInfo(myPlayer.item[buttonIndex])
@@ -366,7 +364,6 @@ local function onItemButtonTap(buttonIndex)
         itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
       end
-    end
     end
 end
 
@@ -398,9 +395,8 @@ end
 local function playerTurn()
 --決定目前可以使用甚麼道具
   for i=1,# myPlayer.item do
-    print( getmetatable(myPlayer.item[i]).__index)
-    if getmetatable(myPlayer.item[i]).__index == Armor then
-       itemButtonTouchable[i] = false
+    if myPlayer.item[i].type ~= "Armor" then
+       itemButtonRects[i].isHitTestable = false
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
     end  
   end
@@ -541,15 +537,12 @@ local function showMessage()
   waitMessage.isVisible = true
 end
 
-local function setItemImage(callback)
+local function setItemImage()
     for i=1,#myPlayer.item do
       itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
       transition.fadeIn( itemIconRects[i], { delay = i*250, time = 250,})
     end
-    timer.performWithDelay(4000,function()
-     callback()
-     hideMessage()
-     end)
+    timer.performWithDelay(4000, hideMessage)
 end
 
 --hide時，重置scene上的元素
@@ -597,9 +590,10 @@ local phase = event.phase
     initCharacter()
     setText()
     showMessage()
-    setItemImage(playerTurn)
+    setItemImage()
   
   elseif phase == "did" then
+    playerTurn()
     if myPlayer.health == 0 or myNPC.health==0 then
       showFinalMessage()
       endGame()

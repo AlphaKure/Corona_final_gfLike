@@ -251,7 +251,6 @@ local turnText
 local itemButtonRects = {} 
 local itemIconRects ={}
 local itemButtonIsClick={false,false,false,false,false,false,false,false}
-local itemButtonTouchable={true,true,true,true,true,true,true,true}
 local background
 local overlay
 
@@ -352,7 +351,6 @@ end
 
 local function onItemButtonTap(buttonIndex)
     return function(event)
-    if itemButtonTouchable[buttonIndex] == true then
       if itemButtonIsClick[buttonIndex] == false then
         itemLogicHandler(buttonIndex)
         setplayerItemInfo(myPlayer.item[buttonIndex])
@@ -366,7 +364,6 @@ local function onItemButtonTap(buttonIndex)
         itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
       end
-    end
     end
 end
 
@@ -400,7 +397,7 @@ local function playerTurn()
   for i=1,# myPlayer.item do
     print( getmetatable(myPlayer.item[i]).__index)
     if getmetatable(myPlayer.item[i]).__index == Armor then
-       itemButtonTouchable[i] = false
+       itemButtonRects[i]:removeEventListener("tap", onItemButtonTap(i))
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
     end  
   end

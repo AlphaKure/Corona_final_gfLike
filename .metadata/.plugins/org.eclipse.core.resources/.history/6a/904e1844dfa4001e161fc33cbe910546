@@ -352,7 +352,6 @@ end
 
 local function onItemButtonTap(buttonIndex)
     return function(event)
-    if itemButtonTouchable[buttonIndex] == true then
       if itemButtonIsClick[buttonIndex] == false then
         itemLogicHandler(buttonIndex)
         setplayerItemInfo(myPlayer.item[buttonIndex])
@@ -366,7 +365,6 @@ local function onItemButtonTap(buttonIndex)
         itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
       end
-    end
     end
 end
 
@@ -400,7 +398,7 @@ local function playerTurn()
   for i=1,# myPlayer.item do
     print( getmetatable(myPlayer.item[i]).__index)
     if getmetatable(myPlayer.item[i]).__index == Armor then
-       itemButtonTouchable[i] = false
+        
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
     end  
   end

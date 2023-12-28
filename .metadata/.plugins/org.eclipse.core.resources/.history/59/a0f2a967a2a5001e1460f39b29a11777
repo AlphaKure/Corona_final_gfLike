@@ -344,25 +344,9 @@ local function setplayerItemInfo(item)
  
 end
 
-local function disableButton(type,buttonIndex)
-      for i=1,# myPlayer.item do
-        if getmetatable(myPlayer.item[i]).__index == type and i~=buttonIndex then
-           itemButtonTouchable[i] = false
-           itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
-        end  
-      end 
-end
-local function enableButton(type)
-      for i=1,# myPlayer.item do
-        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue == 1  then
-           itemButtonTouchable[i] = true
-           itemIconRects[i]:setFillColor(1, 1, 1)
-        end  
-      end 
-end
+
 --Strategy Pattern處理道具邏輯
-local strategy = {}
-local restoreList = {}
+local strategy={}
 function strategy:new()
     local newStrategy = {
       method
@@ -371,11 +355,6 @@ function strategy:new()
     
     function newStrategy:itemStrategy()
     
-    end
-    function newStrategy:restoreStrategy()
-      for i=1,#restoreList do 
-        enableButton(restoreList[i])
-      end
     end    
     return newStrategy
 end
@@ -397,79 +376,40 @@ function selectWeaponStrategy:new(buttonIndex)
     function WeaponStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        disableButton(Potion,buttonIndex)
-        restoreList = {Potion}
       end
       if(whosTurn== myNPC)then
       
       end
     end      
-
+    
     return WeaponStrategy
-end
-
-local selectArmorStrategy={}
-function selectArmorStrategy:new(buttonIndex)
-    local WeaponStrategy = strategy:new()
-    function WeaponStrategy:itemStrategy()
-      if(whosTurn== myPlayer)then
-        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-      end
-      if(whosTurn== myNPC)then
-      
-      end
-    end      
-    return WeaponStrategy
-end
-
-local selectPotionStrategy={}
-function selectPotionStrategy:new(buttonIndex)
-    local PotionStrategy = strategy:new()
-    function PotionStrategy:itemStrategy()
-      if(whosTurn== myPlayer)then
-        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        disableButton(Weapon,buttonIndex)
-        disableButton(Potion,buttonIndex)
-        restoreList = {Potion,Weapon}
-      end
-      if(whosTurn== myNPC)then
-      
-      end
-    end      
-
-    return PotionStrategy
 end
 
 local curStrategy
 
 local function itemLogicHandler(buttonIndex)
-  local type = getmetatable(myPlayer.item[buttonIndex]).__index
-  if type == Weapon then
+  if myPlayer.item[buttonIndex].type == "Weapon" then
     curStrategy = selectWeaponStrategy:new(buttonIndex)
-  end
-  if type == Armor then
-    curStrategy = selectArmorStrategy:new(buttonIndex)
-  end
-  if type == Potion then
-    curStrategy = selectPotionStrategy:new(buttonIndex)
   end
   curStrategy:itemStrategy()
 end
 
 --
 
+local function disableButton()
+
+end
 
 local function onItemButtonTap(buttonIndex)
     return function(event)
     if itemButtonTouchable[buttonIndex] == true then
       if itemButtonIsClick[buttonIndex] == false then
         itemLogicHandler(buttonIndex)
-        setplayerItemInfo(playerItemQueue[#playerItemQueue])
+        setplayerItemInfo(myPlayer.item[buttonIndex])
         itemButtonIsClick[buttonIndex] = true
         itemIconRects[buttonIndex]:setFillColor(0.5, 0.5, 0.5)
       else
         local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
-        curStrategy:restoreStrategy()
         table.remove(playerItemQueue,delItemIndex)
         allItemInfoGroup[delItemIndex]:removeSelf()
         itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
@@ -514,6 +454,7 @@ local function playerTurn()
   whosTurn = myPlayer
   updateTurn()
   for i=1,# myPlayer.item do
+    print( getmetatable(myPlayer.item[i]).__index)
     if getmetatable(myPlayer.item[i]).__index == Armor then
        itemButtonTouchable[i] = false
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)

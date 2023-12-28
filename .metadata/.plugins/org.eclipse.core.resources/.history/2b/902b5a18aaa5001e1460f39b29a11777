@@ -354,7 +354,7 @@ local function disableButton(type,buttonIndex)
 end
 local function enableButton(type)
       for i=1,# myPlayer.item do
-        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue == 1  then
+        if getmetatable(myPlayer.item[i]).__index == type then
            itemButtonTouchable[i] = true
            itemIconRects[i]:setFillColor(1, 1, 1)
         end  

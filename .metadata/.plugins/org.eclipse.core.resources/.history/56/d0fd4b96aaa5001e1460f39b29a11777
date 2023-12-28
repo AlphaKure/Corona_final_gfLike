@@ -413,10 +413,10 @@ function selectArmorStrategy:new(buttonIndex)
     local WeaponStrategy = strategy:new()
     function WeaponStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-       
+        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
       end
       if(whosTurn== myNPC)then
-        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+      
       end
     end      
     return WeaponStrategy

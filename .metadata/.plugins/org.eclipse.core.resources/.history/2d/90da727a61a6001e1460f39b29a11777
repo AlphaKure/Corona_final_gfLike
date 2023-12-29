@@ -65,11 +65,11 @@ end
 
 local Potion = {}
 --藥水回復值可能變動
-function Potion:new(name,dice_amount,dice_face,recover_type,value,rare,imagePath,effect,describe)
+function Potion:new(name,dice_amount,dice_face,type,value,rare,imagePath,effect,describe)
     local newPotion = Item:new(name,value,rare,imagePath,effect,describe)
     newPotion.amount = dice_amount
     newPotion.face = dice_face
-    newPotion.recover_type = recover_type
+    newPotion.type = type
     setmetatable(newPotion, { __index = Potion })
     return newPotion
 end
@@ -86,18 +86,19 @@ local itemTemplates = {
    --{id = , type = "Armor", name = "",defense =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    --{id = , type = "Potion", name = "",dice_amount =,dice_face =,type =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    {id = 1, type = "Weapon", name = "weaponTest",dice_amount =1,dice_face =4,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_1.png",effect =nil,describe="123"},
-   {id = 2, type = "Potion", name = "healthPotionTest",dice_amount =1,dice_face =5,recover_type ="health", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
+   {id = 2, type = "Potion", name = "healthPotionTest",dice_amount =1,dice_face =5,type ="health", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
    {id = 3, type = "Weapon", name = "weaponTest2",dice_amount =2,dice_face =3,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_3.png",effect =nil,describe="123"},
    {id = 4 ,type = "Armor", name = "armorTest",defense =2,element =nil, value =1,rare =1, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
    {id = 5, type = "Weapon", name = "weaponTest3",dice_amount =4,dice_face =1,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_5.png",effect =effectFunctionTest,describe="123"},
    {id = 6 , type = "WeaponAdd", name = "weaponAddTest",damage =2,element =nil, value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_6.png",effect =nil,describe="123"},
    {id = 7 , type = "Armor", name = "armorTest2",defense =5,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_7.png",effect =nil,describe="123"},
    {id = 8 , type = "Weapon", name = "weaponElem",dice_amount =1,dice_face =2,element ="fire", value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_8.png",effect =nil,describe="123"},
-   {id = 9, type = "Potion", name = "PPPotionTest",dice_amount =1,dice_face =5,recover_type ="PP", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
+   {id = 9, type = "Potion", name = "PPPotionTest",dice_amount =1,dice_face =5,type ="PP", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
    {id = 10,type = "Armor", name = "armorTest3",defense =4,element ="fire", value =7,rare =2, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
 }
 
 -- 工廠函數，根據類型創建對應的物品
+
 function createItemFromTemplate(id)
     local template = itemTemplates[id]
     if template then
@@ -107,9 +108,10 @@ function createItemFromTemplate(id)
         elseif template.type == "WeaponAdd" then
           newItem = WeaponAdd:new(template.name, template.damage,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
         elseif template.type == "Armor" then
-          newItem = Armor:new(template.name, template.defense,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
+          newItem = Armor:new(template.name, template.value, template.imagePath)
         elseif template.type == "Potion" then
-          newItem = Potion:new(template.name, template.dice_amount,template.dice_face,template.recover_type,template.value,template.rare, template.imagePath,template.effect,template.describe)
+          newItem = Potion:new(template.name, template.value, template.imagePath)
+
         end
         return newItem
     else
@@ -272,7 +274,7 @@ local function setplayerItemInfo(item)
   itemInfoIcon.x = display.contentCenterX-65
   itemInfoIcon.y = display.contentCenterY
   local itemInfoNameText = display.newText(itemInfoGroup,item.name,display.contentCenterX-15, display.contentCenterY-9, native.systemFont, 14 )
-  local itemInfoDescriptText = display.newText(itemInfoGroup,item.describe,display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
+  local itemInfoDescriptText = display.newText(itemInfoGroup,"TestDescribe",display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
   itemInfoGroup.x = display.contentCenterX-220
   updateItemInfoUI()
  
@@ -332,24 +334,6 @@ function selectWeaponStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        disableButton(Weapon,buttonIndex)
-        restoreList = {Potion,Weapon}
-      end
-      if(whosTurn== myNPC)then
-      
-      end
-    end      
-
-    return WeaponStrategy
-end
-
-local selectWeaponAddStrategy={}
-function selectWeaponAddStrategy:new(buttonIndex)
-    local WeaponAddStrategy = strategy:new()
-    function WeaponAddStrategy:itemStrategy()
-      if(whosTurn== myPlayer)then
-        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        disableButton(Potion,buttonIndex)
         restoreList = {Potion}
       end
       if(whosTurn== myNPC)then
@@ -357,7 +341,7 @@ function selectWeaponAddStrategy:new(buttonIndex)
       end
     end      
 
-    return WeaponAddStrategy
+    return WeaponStrategy
 end
 
 local selectArmorStrategy={}
@@ -382,8 +366,7 @@ function selectPotionStrategy:new(buttonIndex)
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Weapon,buttonIndex)
         disableButton(Potion,buttonIndex)
-        disableButton(WeaponAdd,buttonIndex)
-        restoreList = {Potion,Weapon,WeaponAdd}
+        restoreList = {Potion,Weapon}
       end
       if(whosTurn== myNPC)then
       
@@ -405,9 +388,6 @@ local function itemLogicHandler(buttonIndex)
   end
   if type == Potion then
     curStrategy = selectPotionStrategy:new(buttonIndex)
-  end
-  if type == WeaponAdd then
-    curStrategy = selectWeaponAddStrategy:new(buttonIndex)
   end
   curStrategy:itemStrategy()
 end
@@ -626,7 +606,6 @@ end
 --hide時，重置scene上的元素
 local function reset()
   itemButtonIsClick={false,false,false,false,false,false,false,false}
-  itemButtonTouchable={true,true,true,true,true,true,true,true}
   playerItemQueue={}
   npcItemQueue={}
 

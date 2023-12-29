@@ -17,15 +17,15 @@ local scene = composer.newScene()
 -- Initialize variables
 
 local Item = {}
---道具初始屬性:名稱、價格、稀有度(1最低~5最高)、圖片、效果函式
-function Item:new(name, value,rare, imagePath , effect,describe)
+--道具初始屬性:名稱、價格、稀有度、圖片、效果函式
+function Item:new(name, value,rare, imagePath , effect)
     local newItem = {
         name = name,
         value = value,
         rare = rare,
         imagePath = imagePath,
         effect = effect,
-        describe =describe,
+        
     }
     setmetatable(newItem, { __index = Item })
     return newItem
@@ -33,30 +33,21 @@ end
 
 
 local Weapon = {}
---武器傷害值可以是變動的ex:2d6 = 投擲2顆六面骰子，屬性種類有:
-function Weapon:new(name,dice_amount,dice_face,element,value,rare, imagePath,effect,describe)
-    local newWeapon = Item:new(name,value,rare,imagePath,effect,describe)
+--武器傷害值是變動的ex:2d6 = 投擲2顆六面骰子
+function Weapon:new(name,dice_amount,dice_type,element,value,rare, imagePath,effect)
+    local newWeapon = Item:new(name,value,rare,imagePath,effect)
     newWeapon.amount = dice_amount
-    newWeapon.face = dice_face
+    newWeapon.type = dice_type
     newWeapon.element = element
     setmetatable(newWeapon, { __index = Weapon })
     return newWeapon
 end
 
-local WeaponAdd = {}
---可以疊加傷害的武器，疊加值是固定的
-function WeaponAdd:new(name,damage,element,value,rare, imagePath,effect,describe)
-    local newWeaponAdd = Item:new(name,value,rare,imagePath,effect,describe)
-    newWeaponAdd.damage = damage
-    newWeaponAdd.element = element
-    setmetatable(newWeaponAdd, { __index = WeaponAdd })
-    return newWeaponAdd
-end
 
 local Armor = {}
 --防具的防禦值是固定的
-function Armor:new(name,defense,element,value,rare,imagePath,effect,describe)
-    local newArmor = Item:new(name,value,rare,imagePath,effect,describe)
+function Armor:new(name,defense,element,value,rare,imagePath,effect)
+    local newArmor = Item:new(name,value,rare,imagePath,effect)
     newArmor.defense = defense
     setmetatable(newArmor, { __index = Armor })
     return newArmor
@@ -64,52 +55,133 @@ end
 
 
 local Potion = {}
---藥水回復值可能變動
-function Potion:new(name,dice_amount,dice_face,recover_type,value,rare,imagePath,effect,describe)
-    local newPotion = Item:new(name,value,rare,imagePath,effect,describe)
-    newPotion.amount = dice_amount
-    newPotion.face = dice_face
-    newPotion.recover_type = recover_type
+
+function Potion:new(name,dice,recover,type,value,rare,imagePath,effect)
+    local newPotion = Item:new(name,value,rare,imagePath,effect)
+    newPotion.recover = recover
+    newPotion.type = type
     setmetatable(newPotion, { __index = Potion })
     return newPotion
 end
 
 -- 編輯道具模板以新增道具
 
-local function effectFunctionTest()
-  print("effect test")
-end
-
 local itemTemplates = {
-   --{id = , type = "Weapon", name = "",dice_amount =,dice_face =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
-   --{id = , type = "WeaponAdd", name = "",damage =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
-   --{id = , type = "Armor", name = "",defense =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
-   --{id = , type = "Potion", name = "",dice_amount =,dice_face =,type =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
-   {id = 1, type = "Weapon", name = "weaponTest",dice_amount =1,dice_face =4,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_1.png",effect =nil,describe="123"},
-   {id = 2, type = "Potion", name = "healthPotionTest",dice_amount =1,dice_face =5,recover_type ="health", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
-   {id = 3, type = "Weapon", name = "weaponTest2",dice_amount =2,dice_face =3,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_3.png",effect =nil,describe="123"},
-   {id = 4 ,type = "Armor", name = "armorTest",defense =2,element =nil, value =1,rare =1, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
-   {id = 5, type = "Weapon", name = "weaponTest3",dice_amount =4,dice_face =1,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_5.png",effect =effectFunctionTest,describe="123"},
-   {id = 6 , type = "WeaponAdd", name = "weaponAddTest",damage =2,element =nil, value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_6.png",effect =nil,describe="123"},
-   {id = 7 , type = "Armor", name = "armorTest2",defense =5,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_7.png",effect =nil,describe="123"},
-   {id = 8 , type = "Weapon", name = "weaponElem",dice_amount =1,dice_face =2,element ="fire", value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_8.png",effect =nil,describe="123"},
-   {id = 9, type = "Potion", name = "PPPotionTest",dice_amount =1,dice_face =5,recover_type ="PP", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
-   {id = 10,type = "Armor", name = "armorTest3",defense =4,element ="fire", value =7,rare =2, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
+   --{id = , type = "", name = "", value = , imagePath = "resource/icon/release_v1.2-single_A.png"}
+   {id = 1, type = "Weapon" , name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_1.png"},
+   {id = 2, type = "Potion" , name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_2.png"},
+   {id = 3, type = "Weapon" , name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_3.png"},
+   {id = 4, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_4.png"},
+   {id = 5, type = "Weapon", name = "weapon", value = 2, imagePath = "resource/icon/release_v1.2-single_5.png"},
+   {id = 6, type = "Weapon" , name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_6.png"},
+   {id = 7, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_7.png"},
+   {id = 8, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_8.png"},
+   {id = 9, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_9.png"},
+   {id = 10, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_10.png"},
+   {id = 11, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_11.png"},
+   {id = 12, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_12.png"},
+   {id = 13, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_13.png"},
+   {id = 14, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_14.png"},
+   {id = 15, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_15.png"},
+   {id = 16, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_16.png"},
+   {id = 17, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_17.png"},
+   {id = 18, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_18.png"},
+   {id = 19, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_19.png"},
+   {id = 20, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_20.png"},
+   {id = 21, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_21.png"},
+   {id = 22, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_22.png"},
+   {id = 23, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_23.png"},
+   {id = 24, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_24.png"},
+   {id = 25, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_25.png"},
+   {id = 26, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_26.png"},
+   {id = 27, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_27.png"},
+   {id = 28, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_28.png"},
+   {id = 29, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_29.png"},
+   {id = 30, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_30.png"},
+   {id = 31, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_31.png"},
+   {id = 32, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_32.png"},
+   {id = 33, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_33.png"},
+   {id = 34, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_34.png"},
+   {id = 35, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_35.png"},
+   {id = 36, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_36.png"},
+   {id = 37, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_37.png"},
+   {id = 38, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_38.png"},
+   {id = 39, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_39.png"},
+   {id = 40, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_40.png"},
+   {id = 41, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_41.png"},
+   {id = 42, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_42.png"},
+   {id = 43, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_43.png"},
+   {id = 44, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_44.png"},
+   {id = 45, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_45.png"},
+   {id = 46, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_46.png"},
+   {id = 47, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_47.png"},
+   {id = 48, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_48.png"},
+   {id = 49, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_49.png"},
+   {id = 50, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_50.png"},
+   {id = 51, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_51.png"},
+   {id = 52, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_52.png"},
+   {id = 53, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_53.png"},
+   {id = 54, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_54.png"},
+   {id = 55, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_55.png"},
+   {id = 56, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_56.png"},
+   {id = 57, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_57.png"},
+   {id = 58, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_58.png"},
+   {id = 59, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_59.png"},
+   {id = 60, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_60.png"},
+   {id = 61, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_61.png"},
+   {id = 62, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_62.png"},
+   {id = 63, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_63.png"},
+   {id = 64, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_64.png"},
+   {id = 65, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_65.png"},
+   {id = 66, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_66.png"},
+   {id = 67, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_67.png"},
+   {id = 68, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_68.png"},
+   {id = 69, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_69.png"},
+   {id = 70, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_70.png"},
+   {id = 71, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_71.png"},
+   {id = 72, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_72.png"},
+   {id = 73, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_73.png"},
+   {id = 74, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_74.png"},
+   {id = 75, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_75.png"},
+   {id = 76, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_76.png"},
+   {id = 77, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_77.png"},
+   {id = 78, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_78.png"},
+   {id = 79, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_79.png"},
+   {id = 80, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_80.png"},
+   {id = 81, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_81.png"},
+   {id = 82, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_82.png"},
+   {id = 83, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_83.png"},
+   {id = 84, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_84.png"},
+   {id = 85, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_85.png"},
+   {id = 86, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_86.png"},
+   {id = 87, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_87.png"},
+   {id = 88, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_88.png"},
+   {id = 89, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_89.png"},
+   {id = 90, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_90.png"},
+   {id = 91, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_91.png"},
+   {id = 92, type = "Potion", name = "healthPotion", value = 5, imagePath = "resource/icon/release_v1.2-single_92.png"},
+   {id = 93, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_93.png"},
+   {id = 94, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_94.png"},
+   {id = 95, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_95.png"},
+   {id = 96, type = "Weapon", name = "weapon", value = 5, imagePath = "resource/icon/release_v1.2-single_96.png"},
+   {id = 97, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_97.png"},
+   {id = 98, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_98.png"},
+   {id = 99, type = "Armor", name = "armor", value = 4, imagePath = "resource/icon/release_v1.2-single_99.png"},
+   {id = 100, type = "Weapon", name = "attackPotion", value = 3, imagePath = "resource/icon/release_v1.2-single_100.png"}
 }
 
 -- 工廠函數，根據類型創建對應的物品
+
 function createItemFromTemplate(id)
     local template = itemTemplates[id]
     if template then
         local newItem
         if template.type == "Weapon" then
-          newItem = Weapon:new(template.name, template.dice_amount,template.dice_face,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
-        elseif template.type == "WeaponAdd" then
-          newItem = WeaponAdd:new(template.name, template.damage,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
+          newItem = Weapon:new(template.name, template.value, template.imagePath)
         elseif template.type == "Armor" then
-          newItem = Armor:new(template.name, template.defense,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
+          newItem = Armor:new(template.name, template.value, template.imagePath)
         elseif template.type == "Potion" then
-          newItem = Potion:new(template.name, template.dice_amount,template.dice_face,template.recover_type,template.value,template.rare, template.imagePath,template.effect,template.describe)
+          newItem = Potion:new(template.name, template.value, template.imagePath)
         end
         return newItem
     else
@@ -272,7 +344,7 @@ local function setplayerItemInfo(item)
   itemInfoIcon.x = display.contentCenterX-65
   itemInfoIcon.y = display.contentCenterY
   local itemInfoNameText = display.newText(itemInfoGroup,item.name,display.contentCenterX-15, display.contentCenterY-9, native.systemFont, 14 )
-  local itemInfoDescriptText = display.newText(itemInfoGroup,item.describe,display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
+  local itemInfoDescriptText = display.newText(itemInfoGroup,"TestDescribe",display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
   itemInfoGroup.x = display.contentCenterX-220
   updateItemInfoUI()
  
@@ -332,24 +404,6 @@ function selectWeaponStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        disableButton(Weapon,buttonIndex)
-        restoreList = {Potion,Weapon}
-      end
-      if(whosTurn== myNPC)then
-      
-      end
-    end      
-
-    return WeaponStrategy
-end
-
-local selectWeaponAddStrategy={}
-function selectWeaponAddStrategy:new(buttonIndex)
-    local WeaponAddStrategy = strategy:new()
-    function WeaponAddStrategy:itemStrategy()
-      if(whosTurn== myPlayer)then
-        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        disableButton(Potion,buttonIndex)
         restoreList = {Potion}
       end
       if(whosTurn== myNPC)then
@@ -357,7 +411,7 @@ function selectWeaponAddStrategy:new(buttonIndex)
       end
     end      
 
-    return WeaponAddStrategy
+    return WeaponStrategy
 end
 
 local selectArmorStrategy={}
@@ -382,8 +436,7 @@ function selectPotionStrategy:new(buttonIndex)
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Weapon,buttonIndex)
         disableButton(Potion,buttonIndex)
-        disableButton(WeaponAdd,buttonIndex)
-        restoreList = {Potion,Weapon,WeaponAdd}
+        restoreList = {Potion,Weapon}
       end
       if(whosTurn== myNPC)then
       
@@ -405,9 +458,6 @@ local function itemLogicHandler(buttonIndex)
   end
   if type == Potion then
     curStrategy = selectPotionStrategy:new(buttonIndex)
-  end
-  if type == WeaponAdd then
-    curStrategy = selectWeaponAddStrategy:new(buttonIndex)
   end
   curStrategy:itemStrategy()
 end
@@ -626,7 +676,6 @@ end
 --hide時，重置scene上的元素
 local function reset()
   itemButtonIsClick={false,false,false,false,false,false,false,false}
-  itemButtonTouchable={true,true,true,true,true,true,true,true}
   playerItemQueue={}
   npcItemQueue={}
 

@@ -332,24 +332,6 @@ function selectWeaponStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        disableButton(Weapon,buttonIndex)
-        restoreList = {Potion,Weapon}
-      end
-      if(whosTurn== myNPC)then
-      
-      end
-    end      
-
-    return WeaponStrategy
-end
-
-local selectWeaponAddStrategy={}
-function selectWeaponAddStrategy:new(buttonIndex)
-    local WeaponAddStrategy = strategy:new()
-    function WeaponAddStrategy:itemStrategy()
-      if(whosTurn== myPlayer)then
-        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        disableButton(Potion,buttonIndex)
         restoreList = {Potion}
       end
       if(whosTurn== myNPC)then
@@ -357,7 +339,7 @@ function selectWeaponAddStrategy:new(buttonIndex)
       end
     end      
 
-    return WeaponAddStrategy
+    return WeaponStrategy
 end
 
 local selectArmorStrategy={}
@@ -382,8 +364,7 @@ function selectPotionStrategy:new(buttonIndex)
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Weapon,buttonIndex)
         disableButton(Potion,buttonIndex)
-        disableButton(WeaponAdd,buttonIndex)
-        restoreList = {Potion,Weapon,WeaponAdd}
+        restoreList = {Potion,Weapon}
       end
       if(whosTurn== myNPC)then
       
@@ -405,9 +386,6 @@ local function itemLogicHandler(buttonIndex)
   end
   if type == Potion then
     curStrategy = selectPotionStrategy:new(buttonIndex)
-  end
-  if type == WeaponAdd then
-    curStrategy = selectWeaponAddStrategy:new(buttonIndex)
   end
   curStrategy:itemStrategy()
 end
@@ -626,7 +604,6 @@ end
 --hide時，重置scene上的元素
 local function reset()
   itemButtonIsClick={false,false,false,false,false,false,false,false}
-  itemButtonTouchable={true,true,true,true,true,true,true,true}
   playerItemQueue={}
   npcItemQueue={}
 

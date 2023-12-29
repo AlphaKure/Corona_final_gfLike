@@ -332,8 +332,7 @@ function selectWeaponStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        disableButton(Weapon,buttonIndex)
-        restoreList = {Potion,Weapon}
+        restoreList = {Potion}
       end
       if(whosTurn== myNPC)then
       
@@ -383,7 +382,7 @@ function selectPotionStrategy:new(buttonIndex)
         disableButton(Weapon,buttonIndex)
         disableButton(Potion,buttonIndex)
         disableButton(WeaponAdd,buttonIndex)
-        restoreList = {Potion,Weapon,WeaponAdd}
+        restoreList = {Potion,Weapon}
       end
       if(whosTurn== myNPC)then
       

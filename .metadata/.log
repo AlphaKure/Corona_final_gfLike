@@ -9108,3 +9108,12 @@ org.eclipse.dltk.core.ModelException:   does not exist
 	at org.eclipse.equinox.launcher.Main.main(Main.java:1471)
 !SUBENTRY 1 org.eclipse.dltk.core 4 969 2023-12-20 23:28:21.501
 !MESSAGE   does not exist
+!SESSION 2023-12-28 21:27:31.399 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=21.0.1
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_TW
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY org.eclipse.ldt.ui 2 0 2023-12-29 22:26:59.761
+!MESSAGE org.eclipse.ldt.core.internal.ast.models.file.Identifier starting at offset 867 with length 9 has no definition.

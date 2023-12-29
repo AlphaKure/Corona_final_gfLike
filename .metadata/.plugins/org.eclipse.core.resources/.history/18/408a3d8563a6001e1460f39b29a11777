@@ -383,7 +383,7 @@ function selectPotionStrategy:new(buttonIndex)
         disableButton(Weapon,buttonIndex)
         disableButton(Potion,buttonIndex)
         disableButton(WeaponAdd,buttonIndex)
-        restoreList = {Potion,Weapon,WeaponAdd}
+        restoreList = {Potion,Weapon}
       end
       if(whosTurn== myNPC)then
       

@@ -245,7 +245,7 @@ local function updateItemInfoUI()
   local minY =display.contentCenterY-520
   local totalHeight = #playerItemQueue * (40 + 5) - 5
   local curYDelta = (maxY- minY)/(#playerItemQueue)
-
+  
   if totalHeight > (maxY - minY) then
     local currentY = minY
       for i=1, #playerItemQueue do
@@ -282,7 +282,6 @@ local restoreList = {}
 
 local function disableButton(type,buttonIndex)
       table.insert(restoreList,type)
-      table.insert(restoreList,getmetatable(myPlayer.item[buttonIndex]).__index)
       for i=1,# myPlayer.item do
         if getmetatable(myPlayer.item[i]).__index == type and i~=buttonIndex then
            itemButtonTouchable[i] = false
@@ -292,8 +291,8 @@ local function disableButton(type,buttonIndex)
 end
 local function enableButton(type)
       for i=1,# myPlayer.item do
-        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue ~=1  then
-           itemButtonIsClick[i] = false
+        if getmetatable(myPlayer.item[i]).__index == type then
+           print(type)
            itemButtonTouchable[i] = true
            itemIconRects[i]:setFillColor(1, 1, 1)
         end  
@@ -413,13 +412,11 @@ local function onItemButtonTap(buttonIndex)
         itemButtonIsClick[buttonIndex] = true
         itemIconRects[buttonIndex]:setFillColor(0.5, 0.5, 0.5)
       else
-        
-        if #playerItemQueue>1 and (getmetatable(playerItemQueue[#playerItemQueue]).__index ~= getmetatable(playerItemQueue[1]).__index) then
-          playerItemQueue={}
-          allItemInfoGroup:removeSelf()
+        local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
+        if #playerItemQueue>1 and (getmetatable(playerItemQueue[#playerItemQueue]).__index ~= getmetatable(playerItemQueue[delItemIndex]).__index) then
+          playerItemQueue ={} 
           allItemInfoGroup = display.newGroup()
         else
-          local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
           table.remove(playerItemQueue,delItemIndex)   
           allItemInfoGroup[delItemIndex]:removeSelf() 
         end
@@ -429,7 +426,6 @@ local function onItemButtonTap(buttonIndex)
         updateItemInfoUI()
       end
     end
-    print(#playerItemQueue)
     end
 end
 

@@ -245,7 +245,7 @@ local function updateItemInfoUI()
   local minY =display.contentCenterY-520
   local totalHeight = #playerItemQueue * (40 + 5) - 5
   local curYDelta = (maxY- minY)/(#playerItemQueue)
-
+  
   if totalHeight > (maxY - minY) then
     local currentY = minY
       for i=1, #playerItemQueue do
@@ -278,11 +278,7 @@ local function setplayerItemInfo(item)
  
 end
 
-local restoreList = {}
-
 local function disableButton(type,buttonIndex)
-      table.insert(restoreList,type)
-      table.insert(restoreList,getmetatable(myPlayer.item[buttonIndex]).__index)
       for i=1,# myPlayer.item do
         if getmetatable(myPlayer.item[i]).__index == type and i~=buttonIndex then
            itemButtonTouchable[i] = false
@@ -292,8 +288,7 @@ local function disableButton(type,buttonIndex)
 end
 local function enableButton(type)
       for i=1,# myPlayer.item do
-        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue ~=1  then
-           itemButtonIsClick[i] = false
+        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue == 1  then
            itemButtonTouchable[i] = true
            itemIconRects[i]:setFillColor(1, 1, 1)
         end  
@@ -301,10 +296,13 @@ local function enableButton(type)
 end
 --Strategy Pattern處理道具邏輯
 local strategy = {}
-
+local restoreList = {}
 function strategy:new()
-    local newStrategy = {}
-    setmetatable(newStrategy, { __index = strategy }) 
+    local newStrategy = {
+      method
+    }
+    setmetatable(newStrategy, { __index = strategy })
+    
     function newStrategy:itemStrategy()
     
     end
@@ -312,10 +310,20 @@ function strategy:new()
       for i=1,#restoreList do 
         enableButton(restoreList[i])
       end
-      restoreList = {}
     end    
     return newStrategy
 end
+
+local playerTurnStrategy={}
+function playerTurnStrategy:new()
+    local PlayerTurnStrategy = strategy:new()
+    function PlayerTurnStrategy:itemStrategy()
+     
+    end      
+    
+    return PlayerTurnStrategy
+end
+
 
 local selectWeaponStrategy={}
 function selectWeaponStrategy:new(buttonIndex)
@@ -325,6 +333,7 @@ function selectWeaponStrategy:new(buttonIndex)
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
         disableButton(Weapon,buttonIndex)
+        restoreList = {Potion,Weapon}
       end
       if(whosTurn== myNPC)then
       
@@ -341,6 +350,7 @@ function selectWeaponAddStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
+        restoreList = {Potion}
       end
       if(whosTurn== myNPC)then
       
@@ -373,6 +383,7 @@ function selectPotionStrategy:new(buttonIndex)
         disableButton(Weapon,buttonIndex)
         disableButton(Potion,buttonIndex)
         disableButton(WeaponAdd,buttonIndex)
+        restoreList = {Potion,Weapon,WeaponAdd}
       end
       if(whosTurn== myNPC)then
       
@@ -413,23 +424,15 @@ local function onItemButtonTap(buttonIndex)
         itemButtonIsClick[buttonIndex] = true
         itemIconRects[buttonIndex]:setFillColor(0.5, 0.5, 0.5)
       else
-        
-        if #playerItemQueue>1 and (getmetatable(playerItemQueue[#playerItemQueue]).__index ~= getmetatable(playerItemQueue[1]).__index) then
-          playerItemQueue={}
-          allItemInfoGroup:removeSelf()
-          allItemInfoGroup = display.newGroup()
-        else
-          local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
-          table.remove(playerItemQueue,delItemIndex)   
-          allItemInfoGroup[delItemIndex]:removeSelf() 
-        end
+        local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
         curStrategy:restoreStrategy()
+        table.remove(playerItemQueue,delItemIndex)
+        allItemInfoGroup[delItemIndex]:removeSelf()
         itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
         itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
       end
     end
-    print(#playerItemQueue)
     end
 end
 

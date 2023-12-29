@@ -282,7 +282,6 @@ local restoreList = {}
 
 local function disableButton(type,buttonIndex)
       table.insert(restoreList,type)
-      table.insert(restoreList,getmetatable(myPlayer.item[buttonIndex]).__index)
       for i=1,# myPlayer.item do
         if getmetatable(myPlayer.item[i]).__index == type and i~=buttonIndex then
            itemButtonTouchable[i] = false
@@ -292,8 +291,8 @@ local function disableButton(type,buttonIndex)
 end
 local function enableButton(type)
       for i=1,# myPlayer.item do
-        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue ~=1  then
-           itemButtonIsClick[i] = false
+        if getmetatable(myPlayer.item[i]).__index == type then
+           print(type)
            itemButtonTouchable[i] = true
            itemIconRects[i]:setFillColor(1, 1, 1)
         end  
@@ -413,23 +412,23 @@ local function onItemButtonTap(buttonIndex)
         itemButtonIsClick[buttonIndex] = true
         itemIconRects[buttonIndex]:setFillColor(0.5, 0.5, 0.5)
       else
-        
+        local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
         if #playerItemQueue>1 and (getmetatable(playerItemQueue[#playerItemQueue]).__index ~= getmetatable(playerItemQueue[1]).__index) then
-          playerItemQueue={}
-          allItemInfoGroup:removeSelf()
-          allItemInfoGroup = display.newGroup()
+          for i=#playerItemQueue,1 do
+            table.remove(playerItemQueue,i)   
+            allItemInfoGroup[i]:removeSelf() 
+          end
         else
-          local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
           table.remove(playerItemQueue,delItemIndex)   
           allItemInfoGroup[delItemIndex]:removeSelf() 
+          updateItemInfoUI()
         end
         curStrategy:restoreStrategy()
         itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
         itemButtonIsClick[buttonIndex] = false
-        updateItemInfoUI()
+     
       end
     end
-    print(#playerItemQueue)
     end
 end
 

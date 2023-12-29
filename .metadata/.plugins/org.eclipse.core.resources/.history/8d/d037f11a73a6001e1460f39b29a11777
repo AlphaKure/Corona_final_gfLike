@@ -11,53 +11,11 @@ local scene = composer.newScene()
 -- -----------------------------------------------------------------------------------
 
 
+-- Configure image sheet
 
--- -----------------------------------------------------------------------------------
--- Initialize variables-----------------------------------------------------------------------------------
-local myPlayer
-local myNPC
 
-local turn=0
-local whosTurn
+-- Initialize variables
 
-local backGroup
-local mainGroup
-local uiGroup
-local allItemInfoGroup
-local valueBarGroup
-
-local exitButton
-local attackerButton
-local turnText
-local itemButtonRects = {} 
-local itemIconRects ={}
-local itemButtonIsClick={false,false,false,false,false,false,false,false}
-local itemButtonTouchable={true,true,true,true,true,true,true,true}
-local background
-local overlay
-local valueBar
-local valueBarText
-
-local playerNameBar
-local playerNameBar2
-local playerNameText
-local playerNameText2
-local playerHealthText
-local playerPPText
-local playerMoneyText
-local npcNameBar
-local npcNameBarUp
-local npcNameTextUp
-local npcNameText2
-local npcHealthText
-local npcPPText
-local npcMoneyText
-local showAttackIcon
-local waitMessage
-
-local playerItemQueue={}
-local npcItemQueue={}
--- -----------------------------------------------------------------------------------
 local Item = {}
 --道具初始屬性:名稱、價格、稀有度(1最低~5最高)、圖片、效果函式
 function Item:new(name, value,rare, imagePath , effect,describe)
@@ -210,6 +168,46 @@ function npc:new(name)
     return NPC
 end
 
+local myPlayer
+local myNPC
+
+local turn=0
+local whosTurn
+
+local backGroup
+local mainGroup
+local uiGroup
+local allItemInfoGroup
+
+
+local exitButton
+local attackerButton
+local turnText
+local itemButtonRects = {} 
+local itemIconRects ={}
+local itemButtonIsClick={false,false,false,false,false,false,false,false}
+local itemButtonTouchable={true,true,true,true,true,true,true,true}
+local background
+local overlay
+local valueBar
+local valueBarText
+
+local playerNameBar
+local playerNameBar2
+local playerNameText
+local playerNameText2
+local playerHealthText
+local playerPPText
+local playerMoneyText
+local npcNameBar
+local npcNameBarUp
+local npcNameTextUp
+local npcNameText2
+local npcHealthText
+local npcPPText
+local npcMoneyText
+local showAttackIcon
+local waitMessage
 
 local function endGame()
   
@@ -240,37 +238,8 @@ local function initCharacter()
 end
 
 
-
--- -----------------------------------------------------------------------------------
---UI相關
--- -----------------------------------------------------------------------------------
-local function hideMessage(event)
-  waitMessage.isVisible = false
-end
-
-local function showMessage()
-  waitMessage.isVisible = true
-end
-
-local function showValueBar(text)
-  valueBarGroup.isVisible = true
-  valueBarText.text = text
-end
-
-local function hideValueBar()
-  valueBarGroup.isVisible = false
-end
-
-local function setItemImage(callback)
-    for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*250, time = 250,})
-    end
-    timer.performWithDelay(4000,function()
-     callback()
-     hideMessage()
-     end)
-end
+local playerItemQueue={}
+local npcItemQueue={}
 
 --更新UI上的道具欄位顯示
 local function updateItemInfoUI()
@@ -358,7 +327,6 @@ function selectWeaponStrategy:new(buttonIndex)
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
         disableButton(Weapon,buttonIndex)
-        showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
       end
       if(whosTurn== myNPC)then
       
@@ -375,18 +343,6 @@ function selectWeaponAddStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        local addSum=0
-        if getmetatable(playerItemQueue[1]).__index == WeaponAdd then
-          for i=1,#playerItemQueue do 
-            addSum = addSum +playerItemQueue[i].damage         
-          end
-          showValueBar("+"..addSum) 
-        else
-          for i=2,#playerItemQueue do 
-            addSum = addSum +playerItemQueue[i].damage         
-          end
-          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum) 
-        end
       end
       if(whosTurn== myNPC)then
       
@@ -473,7 +429,6 @@ local function onItemButtonTap(buttonIndex)
         itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
         itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
-        hideValueBar()
       end
     end
     print(#playerItemQueue)
@@ -531,14 +486,13 @@ local function initGameUI(sceneGroup)
   uiGroup = display.newGroup()
   waitMessage = display.newGroup()
   allItemInfoGroup = display.newGroup()
-  valueBarGroup = display.newGroup()
+  allItemInfoGroup.isHitTestable = false
   
   
   sceneGroup:insert( uiGroup )
   sceneGroup:insert(waitMessage)
   sceneGroup:insert(allItemInfoGroup)
-  sceneGroup:insert(valueBarGroup)
-  
+
   background = display.newImageRect( uiGroup, "resource/game_background.jpeg", 500, 1000 )
   background.x = display.contentCenterX
   background.y = display.contentCenterY
@@ -596,12 +550,12 @@ local function initGameUI(sceneGroup)
   showAttackIcon.y = 5
   showAttackIcon.isVisible = false
   
-  valueBar = display.newImageRect( valueBarGroup, "resource/game_valueBar.png", 125, 30 )
+  valueBar = display.newImageRect( uiGroup, "resource/game_valueBar.png", 125, 30 )
   valueBar.x = display.contentCenterX-80
   valueBar.y = display.contentCenterY-25
   
-  valueBarText =display.newText(valueBarGroup, "NONE",display.contentCenterX-80,display.contentCenterY-25, native.systemFont, 14 )
-  valueBarGroup.isVisible = false
+  valueBarText =display.newText(uiGroup, "NPC",display.contentCenterX-80,display.contentCenterY-25, native.systemFont, 14 )
+  
   for i = 1, 4 do
     itemButtonRects[i] = display.newImageRect(uiGroup,"resource/game_itemButton.png", 50, 50)
     itemButtonRects[i].x = (display.contentCenterX+35) + (i - 3) * 70  -- 設置 x 座標
@@ -655,6 +609,23 @@ local function setText()
     
 end
 
+local function hideMessage(event)
+  waitMessage.isVisible = false
+end
+local function showMessage()
+  waitMessage.isVisible = true
+end
+
+local function setItemImage(callback)
+    for i=1,#myPlayer.item do
+      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+      transition.fadeIn( itemIconRects[i], { delay = i*250, time = 250,})
+    end
+    timer.performWithDelay(4000,function()
+     callback()
+     hideMessage()
+     end)
+end
 
 --hide時，重置scene上的元素
 local function reset()

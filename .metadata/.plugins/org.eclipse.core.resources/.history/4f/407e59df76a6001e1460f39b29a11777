@@ -375,18 +375,7 @@ function selectWeaponAddStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        local addSum=0
-        if getmetatable(playerItemQueue[1]).__index == WeaponAdd then
-          for i=1,#playerItemQueue do 
-            addSum = addSum +playerItemQueue[i].damage         
-          end
-          showValueBar("+"..addSum) 
-        else
-          for i=2,#playerItemQueue do 
-            addSum = addSum +playerItemQueue[i].damage         
-          end
-          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum) 
-        end
+        showValueBar(myPlayer.item[1].amount.."D"..myPlayer.item[1].face.."+"..myPlayer.item[buttonIndex].damage)
       end
       if(whosTurn== myNPC)then
       

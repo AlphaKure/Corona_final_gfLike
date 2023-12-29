@@ -55,8 +55,6 @@ local npcMoneyText
 local showAttackIcon
 local waitMessage
 
-local playerItemQueue={}
-local npcItemQueue={}
 -- -----------------------------------------------------------------------------------
 local Item = {}
 --道具初始屬性:名稱、價格、稀有度(1最低~5最高)、圖片、效果函式
@@ -240,37 +238,8 @@ local function initCharacter()
 end
 
 
-
--- -----------------------------------------------------------------------------------
---UI相關
--- -----------------------------------------------------------------------------------
-local function hideMessage(event)
-  waitMessage.isVisible = false
-end
-
-local function showMessage()
-  waitMessage.isVisible = true
-end
-
-local function showValueBar(text)
-  valueBarGroup.isVisible = true
-  valueBarText.text = text
-end
-
-local function hideValueBar()
-  valueBarGroup.isVisible = false
-end
-
-local function setItemImage(callback)
-    for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*250, time = 250,})
-    end
-    timer.performWithDelay(4000,function()
-     callback()
-     hideMessage()
-     end)
-end
+local playerItemQueue={}
+local npcItemQueue={}
 
 --更新UI上的道具欄位顯示
 local function updateItemInfoUI()
@@ -358,7 +327,6 @@ function selectWeaponStrategy:new(buttonIndex)
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
         disableButton(Weapon,buttonIndex)
-        showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
       end
       if(whosTurn== myNPC)then
       
@@ -375,18 +343,6 @@ function selectWeaponAddStrategy:new(buttonIndex)
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         disableButton(Potion,buttonIndex)
-        local addSum=0
-        if getmetatable(playerItemQueue[1]).__index == WeaponAdd then
-          for i=1,#playerItemQueue do 
-            addSum = addSum +playerItemQueue[i].damage         
-          end
-          showValueBar("+"..addSum) 
-        else
-          for i=2,#playerItemQueue do 
-            addSum = addSum +playerItemQueue[i].damage         
-          end
-          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum) 
-        end
       end
       if(whosTurn== myNPC)then
       
@@ -473,7 +429,6 @@ local function onItemButtonTap(buttonIndex)
         itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
         itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
-        hideValueBar()
       end
     end
     print(#playerItemQueue)
@@ -655,6 +610,23 @@ local function setText()
     
 end
 
+local function hideMessage(event)
+  waitMessage.isVisible = false
+end
+local function showMessage()
+  waitMessage.isVisible = true
+end
+
+local function setItemImage(callback)
+    for i=1,#myPlayer.item do
+      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
+      transition.fadeIn( itemIconRects[i], { delay = i*250, time = 250,})
+    end
+    timer.performWithDelay(4000,function()
+     callback()
+     hideMessage()
+     end)
+end
 
 --hide時，重置scene上的元素
 local function reset()

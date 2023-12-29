@@ -380,12 +380,12 @@ function selectWeaponAddStrategy:new(buttonIndex)
           for i=1,#playerItemQueue do 
             addSum = addSum +playerItemQueue[i].damage         
           end
-          showValueBar("+"..addSum) 
+          showValueBar("+"..myPlayer.item[buttonIndex].damage) 
         else
           for i=2,#playerItemQueue do 
             addSum = addSum +playerItemQueue[i].damage         
           end
-          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum) 
+          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..myPlayer.item[buttonIndex].damage) 
         end
       end
       if(whosTurn== myNPC)then

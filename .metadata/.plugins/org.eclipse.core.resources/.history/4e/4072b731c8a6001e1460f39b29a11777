@@ -527,9 +527,6 @@ end
 
 local function attackHandler()
   showAttackIcon.isVisible = true
-  if(#playerItemQueue == 0)then
-    curAction:update(0)
-  end
   print(curAction.valueChange)
 
 end

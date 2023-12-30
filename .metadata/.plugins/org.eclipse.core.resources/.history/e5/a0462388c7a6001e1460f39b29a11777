@@ -314,16 +314,15 @@ end
 
 
 local battleLog = {}
---紀錄並執行數值變化
 function battleLog:new(attacker,target,action,valueChange)
   local newLog = {
     attacker = attacker,
     target = target,
     action = action,
-    valueChange = valueChange,   
+    valueChange = valueChange   
   }
   setmetatable(newLog, { __index = battleLog }) 
-  function newLog:update(value)
+  function newLog:updateValue(value)
     self.valueChange = value
   end
   function newLog:execute()
@@ -527,9 +526,6 @@ end
 
 local function attackHandler()
   showAttackIcon.isVisible = true
-  if(#playerItemQueue == 0)then
-    curAction:update(0)
-  end
   print(curAction.valueChange)
 
 end

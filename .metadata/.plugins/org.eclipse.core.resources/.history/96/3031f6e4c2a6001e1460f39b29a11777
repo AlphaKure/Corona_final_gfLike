@@ -57,7 +57,7 @@ local waitMessage
 
 local playerItemQueue={}
 local npcItemQueue={}
-local curAction
+
 -- -----------------------------------------------------------------------------------
 local Item = {}
 --道具初始屬性:名稱、價格、稀有度(1最低~5最高)、圖片、效果函式
@@ -312,27 +312,6 @@ local function setplayerItemInfo(item)
  
 end
 
-
-local battleLog = {}
---紀錄並執行數值變化
-function battleLog:new(attacker,target,action,valueChange)
-  local newLog = {
-    attacker = attacker,
-    target = target,
-    action = action,
-    valueChange = valueChange,   
-  }
-  setmetatable(newLog, { __index = battleLog }) 
-  function newLog:update(value)
-    self.valueChange = value
-  end
-  function newLog:execute()
-    self.action()
-  end
-  return newLog
-end
-
-
 local restoreList = {}
 
 local function disableButton(type,buttonIndex)
@@ -381,13 +360,6 @@ function selectWeaponStrategy:new(buttonIndex)
         disableButton(Potion,buttonIndex)
         disableButton(Weapon,buttonIndex)
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
-        local curDamage = 0
-        if #playerItemQueue>0 and getmetatable(playerItemQueue[1]).__index == Weapon then
-          for i=1,playerItemQueue[1].amount do
-            curDamage = curDamage +math.random(1, playerItemQueue[1].face)
-          end
-        end
-        curAction:update(curDamage)
       end
       if(whosTurn== myNPC)then
       
@@ -410,27 +382,11 @@ function selectWeaponAddStrategy:new(buttonIndex)
             addSum = addSum +playerItemQueue[i].damage         
           end
           showValueBar("+"..addSum) 
-          curAction.target = myNPC
-          curAction.valueChange = curAction.valueChange
         else
-        showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum)
-        local curDamage = 0
-        if #playerItemQueue>0 and getmetatable(playerItemQueue[1]).__index == Weapon then
-          for i=1,playerItemQueue[1].amount do
-            curDamage = curDamage +math.random(1, playerItemQueue[1].face)
-          end
-        end
-        if #playerItemQueue>0 and getmetatable(playerItemQueue[1]).__index == WeaponAdd then
-          for i=1,playerItemQueue[1].amount do
-            curDamage = curDamage +playerItemQueue[1].damage
-          end
-        end
-        if #playerItemQueue>1 then
           for i=2,#playerItemQueue do 
-            curDamage = curDamage + playerItemQueue[i].damage
+            addSum = addSum +playerItemQueue[i].damage         
           end
-        end
-        curAction:update(curDamage) 
+          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum) 
         end
       end
       if(whosTurn== myNPC)then
@@ -527,11 +483,17 @@ end
 
 local function attackHandler()
   showAttackIcon.isVisible = true
-  if(#playerItemQueue == 0)then
-    curAction:update(0)
+  local curDamage=0
+  for i=1,playerItemQueue[1].amount do
+    curDamage = curDamage +math.random(1, playerItemQueue[1].face)
   end
-  print(curAction.valueChange)
-
+  if #playerItemQueue>1 then
+    for i=2,#playerItemQueue do 
+      curDamage = curDamage + playerItemQueue[i].damage
+    end
+  end
+  print(curDamage)
+  return curDamage
 end
 
 
@@ -561,8 +523,6 @@ local function playerTurn()
 --決定目前可以使用甚麼道具
   whosTurn = myPlayer
   updateTurn()
-  curAction=battleLog:new(myPlayer,nil,nil,0)
-  print(curAction)
   for i=1,# myPlayer.item do
     if getmetatable(myPlayer.item[i]).__index == Armor then
        itemButtonTouchable[i] = false

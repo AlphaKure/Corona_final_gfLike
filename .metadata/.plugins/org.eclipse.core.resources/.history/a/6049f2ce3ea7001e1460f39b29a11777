@@ -58,7 +58,7 @@ local waitMessage
 local playerItemQueue={}
 local npcItemQueue={}
 local curAction
-local preSelectedItemIndex ={}
+local preSelectedItemIndex
 -- -----------------------------------------------------------------------------------
 local Item = {}
 --道具初始屬性:名稱、價格、稀有度(1最低~5最高)、圖片、效果函式
@@ -313,13 +313,9 @@ local function setplayerItemInfo(item)
 end
 
 
-
-local function resetPrevSelectedButton()
-  for i=1,#preSelectedItemIndex do
-    itemIconRects[preSelectedItemIndex[i]]:setFillColor(1, 1, 1)
-    itemButtonIsClick[preSelectedItemIndex[i]] = false    
-  end
-  preSelectedItemIndex={}
+local function resetPrewSelecterButton()
+  itemIconRects[preSelectedItemIndex]:setFillColor(1, 1, 1)
+  itemButtonIsClick[preSelectedItemIndex] = false
 end
 
 local battleLog = {}
@@ -342,9 +338,8 @@ function battleLog:new(attacker,target,action,valueChange)
       
       self.valueChange = attackSum   
     end
-    if self.action == "usePotion" then
+
     
-    end    
   end
   function newLog:execute()
     self.action()
@@ -398,16 +393,15 @@ function selectWeaponStrategy:new(buttonIndex)
         elseif playerItemQueue[1] then
           resetQueue()
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          resetPrevSelectedButton()
+          
         else
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         end
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
         rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
-        curAction.target = myNPC
         curAction:update()
-        table.insert(preSelectedItemIndex,buttonIndex)
+        preSelectedItemIndex = buttonIndex
       end
       if(whosTurn== myNPC)then
       
@@ -435,10 +429,8 @@ function selectWeaponAddStrategy:new(buttonIndex)
           end
           showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum)
           curAction.action = "attack"
-          curAction.target = myNPC
           curAction:update() 
         end
-        table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then
         
@@ -467,19 +459,8 @@ function selectPotionStrategy:new(buttonIndex)
     local PotionStrategy = strategy:new()
     function PotionStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-        if playerItemQueue[1] then
-          resetQueue()
-          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          resetPrevSelectedButton()
-        else   
-          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          
-        end
-      hideValueBar()
-      curAction.action = "usePotion"
-      curAction.target = myPlayer
-      curAction:update()
-      table.insert(preSelectedItemIndex,buttonIndex)
+        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+
       end
       if(whosTurn== myNPC)then
       
@@ -528,7 +509,9 @@ local function onItemButtonTap(buttonIndex)
           table.remove(playerItemQueue,delItemIndex)   
           allItemInfoGroup[delItemIndex]:removeSelf() 
         end
-        resetPrevSelectedButton()
+        curStrategy:restoreStrategy()
+        itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
+        itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
         hideValueBar()
       end

@@ -313,7 +313,6 @@ local function setplayerItemInfo(item)
 end
 
 
-
 local function resetPrevSelectedButton()
   for i=1,#preSelectedItemIndex do
     itemIconRects[preSelectedItemIndex[i]]:setFillColor(1, 1, 1)
@@ -342,9 +341,8 @@ function battleLog:new(attacker,target,action,valueChange)
       
       self.valueChange = attackSum   
     end
-    if self.action == "usePotion" then
+
     
-    end    
   end
   function newLog:execute()
     self.action()
@@ -405,7 +403,6 @@ function selectWeaponStrategy:new(buttonIndex)
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
         rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
-        curAction.target = myNPC
         curAction:update()
         table.insert(preSelectedItemIndex,buttonIndex)
       end
@@ -435,7 +432,6 @@ function selectWeaponAddStrategy:new(buttonIndex)
           end
           showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum)
           curAction.action = "attack"
-          curAction.target = myNPC
           curAction:update() 
         end
         table.insert(preSelectedItemIndex,buttonIndex)
@@ -475,10 +471,6 @@ function selectPotionStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
           
         end
-      hideValueBar()
-      curAction.action = "usePotion"
-      curAction.target = myPlayer
-      curAction:update()
       table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then
@@ -528,7 +520,9 @@ local function onItemButtonTap(buttonIndex)
           table.remove(playerItemQueue,delItemIndex)   
           allItemInfoGroup[delItemIndex]:removeSelf() 
         end
-        resetPrevSelectedButton()
+        curStrategy:restoreStrategy()
+        itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
+        itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
         hideValueBar()
       end

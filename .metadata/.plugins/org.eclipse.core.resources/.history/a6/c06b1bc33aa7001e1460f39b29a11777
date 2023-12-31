@@ -58,7 +58,6 @@ local waitMessage
 local playerItemQueue={}
 local npcItemQueue={}
 local curAction
-local preSelectedItemIndex ={}
 -- -----------------------------------------------------------------------------------
 local Item = {}
 --道具初始屬性:名稱、價格、稀有度(1最低~5最高)、圖片、效果函式
@@ -297,6 +296,8 @@ local function updateItemInfoUI()
 end
 --當點選新道具時，增加UI元素
 local function setplayerItemInfo(item)
+
+  
   local itemInfoGroup = display.newGroup()
   allItemInfoGroup:insert(itemInfoGroup)
   local itemInfoBgRect = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 100, 40)
@@ -312,15 +313,6 @@ local function setplayerItemInfo(item)
  
 end
 
-
-
-local function resetPrevSelectedButton()
-  for i=1,#preSelectedItemIndex do
-    itemIconRects[preSelectedItemIndex[i]]:setFillColor(1, 1, 1)
-    itemButtonIsClick[preSelectedItemIndex[i]] = false    
-  end
-  preSelectedItemIndex={}
-end
 
 local battleLog = {}
 --紀錄並執行數值變化
@@ -342,9 +334,8 @@ function battleLog:new(attacker,target,action,valueChange)
       
       self.valueChange = attackSum   
     end
-    if self.action == "usePotion" then
+
     
-    end    
   end
   function newLog:execute()
     self.action()
@@ -366,13 +357,27 @@ local function rollDice(item)
 end
 
 
-local function resetQueue()
-          playerItemQueue={}
-          allItemInfoGroup:removeSelf()
-          allItemInfoGroup = display.newGroup()
+local restoreList = {}
+local function disableButton(type,buttonIndex)
+      table.insert(restoreList,type)
+      table.insert(restoreList,getmetatable(myPlayer.item[buttonIndex]).__index)
+      for i=1,# myPlayer.item do
+        if getmetatable(myPlayer.item[i]).__index == type and i~=buttonIndex then
+           itemButtonTouchable[i] = false
+           itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
+        end  
+      end 
+end
+local function enableButton(type)
+      for i=1,# myPlayer.item do
+        if getmetatable(myPlayer.item[i]).__index == type and #playerItemQueue ~=1  then
+           itemButtonIsClick[i] = false
+           itemButtonTouchable[i] = true
+           itemIconRects[i]:setFillColor(1, 1, 1)
+        end  
+      end 
 end
 --Strategy Pattern處理道具邏輯
-
 local strategy = {}
 
 function strategy:new()
@@ -382,7 +387,10 @@ function strategy:new()
     
     end
     function newStrategy:restoreStrategy()
-      
+      for i=1,#restoreList do 
+        enableButton(restoreList[i])
+      end
+      restoreList = {}
     end    
     return newStrategy
 end
@@ -392,22 +400,20 @@ function selectWeaponStrategy:new(buttonIndex)
     local WeaponStrategy = strategy:new()
     function WeaponStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-      
         if(#playerItemQueue == 0)then
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        elseif playerItemQueue[1] then
-          resetQueue()
-          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          resetPrevSelectedButton()
+        end
+        if(getmetatable(playerItemQueue[1]).__index == WeaponAdd) then
+          table.insert(playerItemQueue,1, myPlayer.item[buttonIndex])
         else
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         end
+        disableButton(Potion,buttonIndex)
+        disableButton(Weapon,buttonIndex)
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
         rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
-        curAction.target = myNPC
         curAction:update()
-        table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then
       
@@ -423,6 +429,7 @@ function selectWeaponAddStrategy:new(buttonIndex)
     function WeaponAddStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+        disableButton(Potion,buttonIndex)
         local addSum=0      
         if getmetatable(playerItemQueue[1]).__index == WeaponAdd then
           for i=1,#playerItemQueue do 
@@ -435,10 +442,8 @@ function selectWeaponAddStrategy:new(buttonIndex)
           end
           showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum)
           curAction.action = "attack"
-          curAction.target = myNPC
           curAction:update() 
         end
-        table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then
         
@@ -467,19 +472,10 @@ function selectPotionStrategy:new(buttonIndex)
     local PotionStrategy = strategy:new()
     function PotionStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-        if playerItemQueue[1] then
-          resetQueue()
-          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          resetPrevSelectedButton()
-        else   
-          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          
-        end
-      hideValueBar()
-      curAction.action = "usePotion"
-      curAction.target = myPlayer
-      curAction:update()
-      table.insert(preSelectedItemIndex,buttonIndex)
+        table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+        disableButton(Weapon,buttonIndex)
+        disableButton(Potion,buttonIndex)
+        disableButton(WeaponAdd,buttonIndex)
       end
       if(whosTurn== myNPC)then
       
@@ -522,13 +518,17 @@ local function onItemButtonTap(buttonIndex)
         itemIconRects[buttonIndex]:setFillColor(0.5, 0.5, 0.5)
       else        
         if #playerItemQueue>1 and (getmetatable(playerItemQueue[#playerItemQueue]).__index ~= getmetatable(playerItemQueue[1]).__index) then
-          resetQueue()
+          playerItemQueue={}
+          allItemInfoGroup:removeSelf()
+          allItemInfoGroup = display.newGroup()
         else
           local delItemIndex = table.indexOf(playerItemQueue, myPlayer.item[buttonIndex])
           table.remove(playerItemQueue,delItemIndex)   
           allItemInfoGroup[delItemIndex]:removeSelf() 
         end
-        resetPrevSelectedButton()
+        curStrategy:restoreStrategy()
+        itemIconRects[buttonIndex]:setFillColor(1, 1, 1)
+        itemButtonIsClick[buttonIndex] = false
         updateItemInfoUI()
         hideValueBar()
       end

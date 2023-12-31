@@ -313,7 +313,6 @@ local function setplayerItemInfo(item)
 end
 
 
-
 local function resetPrevSelectedButton()
   for i=1,#preSelectedItemIndex do
     itemIconRects[preSelectedItemIndex[i]]:setFillColor(1, 1, 1)
@@ -475,7 +474,6 @@ function selectPotionStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
           
         end
-      hideValueBar()
       curAction.action = "usePotion"
       curAction.target = myPlayer
       curAction:update()

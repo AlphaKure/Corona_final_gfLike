@@ -9117,3 +9117,20 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64
 
 !ENTRY org.eclipse.ldt.ui 2 0 2023-12-29 22:26:59.761
 !MESSAGE org.eclipse.ldt.core.internal.ast.models.file.Identifier starting at offset 867 with length 9 has no definition.
+
+!ENTRY org.eclipse.dltk.core 4 4 2024-01-01 23:42:27.383
+!MESSAGE Background Indexer Crash Recovery
+!STACK 0
+java.lang.OutOfMemoryError: Requested array size exceeds VM limit
+	at org.eclipse.dltk.compiler.util.HashtableOfObject.<init>(HashtableOfObject.java:36)
+	at org.eclipse.dltk.core.search.index.DiskIndex.readCategoryTable(DiskIndex.java:785)
+	at org.eclipse.dltk.core.search.index.DiskIndex.mergeCategory(DiskIndex.java:574)
+	at org.eclipse.dltk.core.search.index.DiskIndex.mergeCategories(DiskIndex.java:563)
+	at org.eclipse.dltk.core.search.index.DiskIndex.mergeWith(DiskIndex.java:684)
+	at org.eclipse.dltk.core.search.index.Index.save(Index.java:220)
+	at org.eclipse.dltk.core.search.indexing.IndexManager.saveIndex(IndexManager.java:799)
+	at org.eclipse.dltk.core.search.indexing.IndexManager.saveIndexes(IndexManager.java:861)
+	at org.eclipse.dltk.core.search.indexing.IndexManager.notifyIdle(IndexManager.java:534)
+	at org.eclipse.dltk.internal.core.search.processing.JobManager.run(JobManager.java:467)
+	at java.base/java.lang.Thread.runWith(Thread.java:1596)
+	at java.base/java.lang.Thread.run(Thread.java:1583)

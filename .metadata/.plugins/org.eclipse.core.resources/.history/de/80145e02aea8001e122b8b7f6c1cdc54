@@ -275,23 +275,6 @@ local function setItemImage(callback)
      end)
 end
 
-local function setAttackIconVisible()
-  showAttackIcon.isVisible = true
-  if curAction.target == myPlayer then
-    showAttackIcon.rotation = 180
-    npcNameBarUp.isVisible = false
-    npcNameTextUp.isVisible = false
-  else
-    showAttackIcon.rotation = 0
-    npcNameBarUp.isVisible = true
-    npcNameTextUp.isVisible = true
-  end
-end
-
-local function hideAttackIcon()
-  showAttackIcon.isVisible = false
-end
-
 --更新UI上的道具欄位顯示
 local function updateItemInfoUI()
   local maxY =display.contentCenterY-320
@@ -330,6 +313,22 @@ local function setplayerItemInfo(item)
 end
 
 
+local function setAttackIconVisible()
+  showAttackIcon.isVisible = true
+  if curAction.target == myPlayer then
+    showAttackIcon.rotation = 180
+    npcNameBarUp.isVisible = false
+    npcNameTextUp.isVisible = false
+  else
+    showAttackIcon.rotation = 0
+    npcNameBarUp.isVisible = true
+    npcNameTextUp.isVisible = true
+  end
+end
+
+local function hideAttackIcon()
+  showAttackIcon.isVisible = false
+end
 
 local function resetPrevSelectedButton()
   for i=1,#preSelectedItemIndex do
@@ -439,29 +438,26 @@ function selectWeaponAddStrategy:new(buttonIndex)
     local WeaponAddStrategy = strategy:new()
     function WeaponAddStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-      
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        
         local addSum=0      
         if getmetatable(playerItemQueue[1]).__index == WeaponAdd then
           for i=1,#playerItemQueue do 
             addSum = addSum +playerItemQueue[i].damage         
           end
-          showValueBar("+"..addSum) 
-        elseif getmetatable(playerItemQueue[1]).__index == Weapon and getmetatable(playerItemQueue[#playerItemQueue]).__index == WeaponAdd then
+          showValueBar("+"..addSum)          
+        elseif getmetatable(playerItemQueue[1]).__index == Weapon then
           for i=2,#playerItemQueue do 
             addSum = addSum +playerItemQueue[i].damage         
           end
-          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum)               
-        else
+          showValueBar(playerItemQueue[1].amount.."D"..playerItemQueue[1].face.."+"..addSum)
+          curAction.action = "attack"
+          curAction.target = myNPC
+          curAction:update() 
+        elseif getmetatable(playerItemQueue[1]).__index ~= WeaponAdd then
           resetQueue()
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          resetPrevSelectedButton()
-          showValueBar("+"..myPlayer.item[buttonIndex].damage) 
+          resetPrevSelectedButton()   
         end
-        curAction.action = "attack"
-        curAction.target = myNPC
-        curAction:update() 
         table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then
@@ -477,10 +473,12 @@ function selectArmorStrategy:new(buttonIndex)
     local WeaponStrategy = strategy:new()
     function WeaponStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-       
+      
+      
       end
       if(whosTurn== myNPC)then
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+        table.insert(preSelectedItemIndex,buttonIndex)
       end
     end      
     return WeaponStrategy
@@ -491,13 +489,12 @@ function selectPotionStrategy:new(buttonIndex)
     local PotionStrategy = strategy:new()
     function PotionStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-        if playerItemQueue[1] then
+        if(#playerItemQueue == 0)then
+          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
+        elseif playerItemQueue[1] then
           resetQueue()
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
           resetPrevSelectedButton()
-        else   
-          table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-          
         end
       hideValueBar()
       curAction.action = "usePotion"
@@ -552,7 +549,6 @@ local function onItemButtonTap(buttonIndex)
           table.remove(playerItemQueue,delItemIndex)   
           allItemInfoGroup[delItemIndex]:removeSelf() 
         end
-        resetPrevSelectedButton()
         updateItemInfoUI()
         hideValueBar()
       end
@@ -566,11 +562,11 @@ local function onItemButtonTap(buttonIndex)
 end
 
 
-local function attackHandler()
-  showAttackIcon.isVisible = true
+local function attackHandler() 
   if(#playerItemQueue == 0)then
     curAction:update(0)
   end
+
   print(curAction.valueChange)
 
 end
@@ -675,6 +671,8 @@ local function initGameUI(sceneGroup)
   npcNameBarUp.x = display.contentCenterX+80
   npcNameBarUp.y = 5
   npcNameTextUp = display.newText( uiGroup, "NPC",display.contentCenterX+75, 5, native.systemFont, 12 )
+  npcNameBarUp.isVisible = false
+  npcNameTextUp.isVisible = false
     
   exitButton = display.newImageRect( uiGroup, "resource/game_exitButton.png", 20, 20 )
   exitButton.x = display.contentCenterX-125

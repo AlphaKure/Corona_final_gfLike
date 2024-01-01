@@ -439,16 +439,14 @@ function selectWeaponAddStrategy:new(buttonIndex)
     local WeaponAddStrategy = strategy:new()
     function WeaponAddStrategy:itemStrategy()
       if(whosTurn== myPlayer)then
-      
         table.insert(playerItemQueue, myPlayer.item[buttonIndex])
-        
         local addSum=0      
         if getmetatable(playerItemQueue[1]).__index == WeaponAdd then
           for i=1,#playerItemQueue do 
             addSum = addSum +playerItemQueue[i].damage         
           end
           showValueBar("+"..addSum) 
-        elseif getmetatable(playerItemQueue[1]).__index == Weapon and getmetatable(playerItemQueue[#playerItemQueue]).__index == WeaponAdd then
+        elseif getmetatable(playerItemQueue[1]).__index ~= Weapon then
           for i=2,#playerItemQueue do 
             addSum = addSum +playerItemQueue[i].damage         
           end

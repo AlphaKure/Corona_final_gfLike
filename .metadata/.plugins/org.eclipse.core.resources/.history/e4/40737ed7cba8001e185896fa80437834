@@ -276,13 +276,6 @@ local function setItemImage(callback)
      end)
 end
 
-local function updateItemSelectImage()
- for i=1,#myPlayer.item do
-      itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
-      transition.fadeIn( itemIconRects[i], { delay = i*100, time = 100,})
-    end 
-end
-
 local function setAttackIconVisible()
   showAttackIcon.isVisible = true
   if curAction.target == myPlayer then
@@ -402,22 +395,11 @@ local function rollDice(item)
   item.damage = damageSum
 end
 
-local function getNewItem(character)
-  if character == myPlayer then
-    
-    for i=1,#preSelectedItemIndex do
-      print(myPlayer.item[preSelectedItemIndex[i]]) 
-      myPlayer.item[preSelectedItemIndex[i]] = randomCreateItem()
-      print(myPlayer.item[preSelectedItemIndex[i]]) 
-    end
-    updateItemSelectImage()
-  end
-end
 
 local function resetQueue()
-  playerItemQueue={}
-  allItemInfoGroup:removeSelf()
-  allItemInfoGroup = display.newGroup()
+          playerItemQueue={}
+          allItemInfoGroup:removeSelf()
+          allItemInfoGroup = display.newGroup()
 end
 --Strategy Pattern處理道具邏輯
 
@@ -605,10 +587,7 @@ local function onAttackerAreaTap(event)
    overlay.alpha = 0
    showAttackIcon.isVisible = true
    curAction.target:adjustHealth(curAction.valueChange)
-   getNewItem(myPlayer)
-   resetQueue()
-   resetPrevSelectedButton()
-   npcTurn()
+   playerTurn()
   end
 end
 
@@ -624,22 +603,13 @@ playerTurn = function()
 --決定目前可以使用甚麼道具
   whosTurn = myPlayer
   updateTurn()
-  curAction=battleLog:new(myPlayer,myNPC,nil,0)
+  curAction=battleLog:new(myPlayer,nil,nil,0)
   for i=1,# myPlayer.item do
     if getmetatable(myPlayer.item[i]).__index == Armor then
        itemButtonTouchable[i] = false
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
-    end
-    if getmetatable(myPlayer.item[i]).__index == Weapon then
-       itemButtonTouchable[i] = true
-       itemIconRects[i]:setFillColor(1, 1, 1)
-    end
-    if getmetatable(myPlayer.item[i]).__index == Potion then
-       itemButtonTouchable[i] = true
-       itemIconRects[i]:setFillColor(1, 1, 1)
-    end
+    end  
   end
-  
   if myPlayer.health<=0 or myNPC.health<=0 then
     showFinalMessage()
   end
@@ -648,25 +618,18 @@ end
 npcTurn = function()
   whosTurn = myNPC
   updateTurn()
-  curAction=battleLog:new(myNPC,myPlayer,nil,0)
+  playerTurn()
+  curAction=battleLog:new(myNPC,nil,nil,0)
   for i=1,# myPlayer.item do
     if getmetatable(myPlayer.item[i]).__index == Weapon then
        itemButtonTouchable[i] = false
        itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
-    end
-    if getmetatable(myPlayer.item[i]).__index == Potion then
-       itemButtonTouchable[i] = false
-       itemIconRects[i]:setFillColor(0.5, 0.5, 0.5)
-    end
-    if getmetatable(myPlayer.item[i]).__index == Armor then
-       itemButtonTouchable[i] = true
-       itemIconRects[i]:setFillColor(1, 1, 1)
     end  
   end
   if myPlayer.health<=0 or myNPC.health<=0 then
     showFinalMessage()
   end
- playerTurn()
+ 
 end
 
 local function initGameUI(sceneGroup)

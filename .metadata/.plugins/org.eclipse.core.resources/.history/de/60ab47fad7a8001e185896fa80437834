@@ -404,11 +404,8 @@ end
 
 local function getNewItem(character)
   if character == myPlayer then
-    
-    for i=1,#preSelectedItemIndex do
-      print(myPlayer.item[preSelectedItemIndex[i]]) 
-      myPlayer.item[preSelectedItemIndex[i]] = randomCreateItem()
-      print(myPlayer.item[preSelectedItemIndex[i]]) 
+    for i=1,#playerItemQueue do 
+      myPlayer.item[playerItemQueue[i]] = randomCreateItem()
     end
     updateItemSelectImage()
   end
@@ -605,7 +602,7 @@ local function onAttackerAreaTap(event)
    overlay.alpha = 0
    showAttackIcon.isVisible = true
    curAction.target:adjustHealth(curAction.valueChange)
-   getNewItem(myPlayer)
+   getNewItem()
    resetQueue()
    resetPrevSelectedButton()
    npcTurn()

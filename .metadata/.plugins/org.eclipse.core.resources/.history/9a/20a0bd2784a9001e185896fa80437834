@@ -105,9 +105,9 @@ end
 
 local Armor = {}
 --防具的防禦值是固定的
-function Armor:new(name,defence,element,value,rare,imagePath,effect,describe)
+function Armor:new(name,defense,element,value,rare,imagePath,effect,describe)
     local newArmor = Item:new(name,value,rare,imagePath,effect,describe)
-    newArmor.defence = defence
+    newArmor.defense = defense
     setmetatable(newArmor, { __index = Armor })
     return newArmor
 end
@@ -134,18 +134,18 @@ end
 local itemTemplates = {
    --{id = , type = "Weapon", name = "",dice_amount =,dice_face =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    --{id = , type = "WeaponAdd", name = "",damage =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
-   --{id = , type = "Armor", name = "",defence =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
+   --{id = , type = "Armor", name = "",defense =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    --{id = , type = "Potion", name = "",dice_amount =,dice_face =,type =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    {id = 1, type = "Weapon", name = "weaponTest",dice_amount =1,dice_face =4,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_1.png",effect =nil,describe="123"},
    {id = 2, type = "Potion", name = "healthPotionTest",dice_amount =1,dice_face =5,recover_type ="health", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
    {id = 3, type = "Weapon", name = "weaponTest2",dice_amount =2,dice_face =3,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_3.png",effect =nil,describe="123"},
-   {id = 4 ,type = "Armor", name = "armorTest",defence =2,element =nil, value =1,rare =1, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
+   {id = 4 ,type = "Armor", name = "armorTest",defense =2,element =nil, value =1,rare =1, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
    {id = 5, type = "Weapon", name = "weaponTest3",dice_amount =4,dice_face =1,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_5.png",effect =effectFunctionTest,describe="123"},
    {id = 6 , type = "WeaponAdd", name = "weaponAddTest",damage =2,element =nil, value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_6.png",effect =nil,describe="123"},
-   {id = 7 , type = "Armor", name = "armorTest2",defence =5,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_7.png",effect =nil,describe="123"},
+   {id = 7 , type = "Armor", name = "armorTest2",defense =5,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_7.png",effect =nil,describe="123"},
    {id = 8 , type = "Weapon", name = "weaponElem",dice_amount =1,dice_face =2,element ="fire", value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_8.png",effect =nil,describe="123"},
    {id = 9, type = "Potion", name = "PPPotionTest",dice_amount =1,dice_face =5,recover_type ="PP", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
-   {id = 10,type = "Armor", name = "armorTest3",defence =4,element ="fire", value =7,rare =2, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
+   {id = 10,type = "Armor", name = "armorTest3",defense =4,element ="fire", value =7,rare =2, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
 }
 
 -- 工廠函數，根據類型創建對應的物品
@@ -158,7 +158,7 @@ function createItemFromTemplate(id)
         elseif template.type == "WeaponAdd" then
           newItem = WeaponAdd:new(template.name, template.damage,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
         elseif template.type == "Armor" then
-          newItem = Armor:new(template.name, template.defence,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
+          newItem = Armor:new(template.name, template.defense,template.element,template.value,template.rare, template.imagePath,template.effect,template.describe)
         elseif template.type == "Potion" then
           newItem = Potion:new(template.name, template.dice_amount,template.dice_face,template.recover_type,template.value,template.rare, template.imagePath,template.effect,template.describe)
         end
@@ -301,11 +301,6 @@ local function hideAttackIcon()
   showAttackIcon.isVisible = false
 end
 
-local function updateTurn()
-  turn=turn+1
-  turnText.text = "TURN: "..turn
-end
-
 --更新UI上的道具欄位顯示
 local function updateItemInfoUI()
   local maxY =display.contentCenterY-320
@@ -324,29 +319,9 @@ local function updateItemInfoUI()
         transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
       end
     end
+
 end
-
-local function updateNPCItemInfoUI()
-  local maxY =display.contentCenterY-320
-  local minY =display.contentCenterY-520
-  local totalHeight = #npcItemQueue * (40 + 5) - 5
-  local curYDelta = (maxY- minY)/(#npcItemQueue)
-
-  if totalHeight > (maxY - minY) then
-    local currentY = minY
-      for i=1, #npcItemQueue do
-        transition.to( allItemInfoGroup[i], { time=200, y=currentY} )
-        currentY = currentY + curYDelta
-      end
-    else
-      for i=1, #npcItemQueue do
-        transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
-      end
-    end
-end
-
-
---當點選新道具時，增加玩家的UI元素
+--當點選新道具時，增加UI元素
 local function setplayerItemInfo(item)
   local itemInfoGroup = display.newGroup()
   allItemInfoGroup:insert(itemInfoGroup)
@@ -360,31 +335,17 @@ local function setplayerItemInfo(item)
   local itemInfoDescriptText = display.newText(itemInfoGroup,item.describe,display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
   itemInfoGroup.x = display.contentCenterX-220
   updateItemInfoUI()
+ 
 end
 
---非玩家
-local function setNPCItemInfo(item)
-  local itemInfoGroup = display.newGroup()
-  allItemInfoGroup:insert(itemInfoGroup)
-  local itemInfoBgRect = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 100, 40)
-  itemInfoBgRect.x = display.contentCenterX
-  itemInfoBgRect.y = display.contentCenterY
-  local itemInfoIcon = display.newImageRect(itemInfoGroup,item.imagePath, 40, 40)
-  itemInfoIcon.x = display.contentCenterX-65
-  itemInfoIcon.y = display.contentCenterY
-  local itemInfoNameText = display.newText(itemInfoGroup,item.name,display.contentCenterX-15, display.contentCenterY-9, native.systemFont, 14 )
-  local itemInfoDescriptText = display.newText(itemInfoGroup,item.describe,display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
-  itemInfoGroup.x = display.contentCenterX+220
-  updateNPCItemInfoUI()
-end
 
 local function showFinalMessage()
   finalMessageGroup.isVisible = true
     if(myPlayer.health<=0)then
-      finalMessageText.text = "勝利者"..myNPC.name
+      finalMessageText.text = "勝利者"..myPlayer.name
     end
     if(myNPC.health<=0)then
-      finalMessageText.text = "勝利者"..myPlayer.name
+      finalMessageText.text = "勝利者"..myNPC.name
     end
     if(myNPC.health<=0 and myPlayer.health<=0 )then
       finalMessageText.text = "大家都掛了"
@@ -416,14 +377,12 @@ function battleLog:new(attacker,target,action,valueChange)
       attackSum = 0
       for i=1,#playerItemQueue do
         attackSum = attackSum - playerItemQueue[i].damage
-      end  
+      end
+      
       self.valueChange = attackSum   
     end
     if self.action == "usePotion" then
     end    
-  end
-  function newLog:addDefend(change)
-    self.valueChange = self.valueChange - change 
   end
   function newLog:execute()
     self.action()
@@ -457,7 +416,6 @@ local function getNewItem(character)
 end
 
 local function resetQueue()
-  npcItemQueue={}
   playerItemQueue={}
   allItemInfoGroup:removeSelf()
   allItemInfoGroup = display.newGroup()
@@ -651,27 +609,17 @@ local function onAttackerAreaTap(event)
    getNewItem(myPlayer)
    resetQueue()
    resetPrevSelectedButton()
-   npcHealthText.text = "HP:"..myNPC.health
    npcTurn()
   end
 end
 
 
 
-local function npcDefenceLogic()
-  local curDamage = curAction.damage
-  local curDefence = 0
-  for i=1,i<=#myNPC.item do
-    if(getmetatable(myNPC.item[i]).__index == Armor)then
-      if(curDefence + myNPC.item[i].defence<=curDamage)then
-        table.insert(npcItemQueue,myNPC.item[i])
-        curDefence = curDefence + myNPC.item[i].defence
-        setNPCItemInfo(myNPC.item[i])
-      end
-    end  
-  end
-  curAction:addDefend(curDefence)
+local function updateTurn()
+  turn=turn+1
+  turnText.text = "TURN: "..turn
 end
+
 
 playerTurn = function()
 --決定目前可以使用甚麼道具
@@ -833,13 +781,12 @@ local function initGameUI(sceneGroup)
   waitMessage:toFront()
   
   
+  finalMessageText = display.newText( finalMessageGroup, "",display.contentCenterX,display.contentCenterY-150 , native.systemFont, 40 )
   finalMessageBar = display.newImageRect(finalMessageGroup,"resource/game_playerArea.png", 300, 250)
   finalMessageBar.x = display.contentCenterX
-  finalMessageBar.y = display.contentCenterY-150
-  finalMessageText = display.newText( finalMessageGroup, "TESTTEST",display.contentCenterX,display.contentCenterY-150 , native.systemFont, 40 )
-  finalMessageGroup.isVisible = false  
+  finalMessageBar.y = display.contentCenterY-150  
   finalMessageGroup:toFront()
-
+  finalMessageGroup.isVisible = false
 end
 
 local function setText()

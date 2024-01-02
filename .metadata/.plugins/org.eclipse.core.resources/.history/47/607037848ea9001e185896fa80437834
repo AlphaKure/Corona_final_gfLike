@@ -381,10 +381,10 @@ end
 local function showFinalMessage()
   finalMessageGroup.isVisible = true
     if(myPlayer.health<=0)then
-      finalMessageText.text = "勝利者"..myNPC.name
+      finalMessageText.text = "勝利者"..myPlayer.name
     end
     if(myNPC.health<=0)then
-      finalMessageText.text = "勝利者"..myPlayer.name
+      finalMessageText.text = "勝利者"..myNPC.name
     end
     if(myNPC.health<=0 and myPlayer.health<=0 )then
       finalMessageText.text = "大家都掛了"

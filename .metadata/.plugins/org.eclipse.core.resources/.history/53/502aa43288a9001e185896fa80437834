@@ -324,29 +324,9 @@ local function updateItemInfoUI()
         transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
       end
     end
+
 end
-
-local function updateNPCItemInfoUI()
-  local maxY =display.contentCenterY-320
-  local minY =display.contentCenterY-520
-  local totalHeight = #npcItemQueue * (40 + 5) - 5
-  local curYDelta = (maxY- minY)/(#npcItemQueue)
-
-  if totalHeight > (maxY - minY) then
-    local currentY = minY
-      for i=1, #npcItemQueue do
-        transition.to( allItemInfoGroup[i], { time=200, y=currentY} )
-        currentY = currentY + curYDelta
-      end
-    else
-      for i=1, #npcItemQueue do
-        transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
-      end
-    end
-end
-
-
---當點選新道具時，增加玩家的UI元素
+--當點選新道具時，增加UI元素
 local function setplayerItemInfo(item)
   local itemInfoGroup = display.newGroup()
   allItemInfoGroup:insert(itemInfoGroup)
@@ -360,31 +340,17 @@ local function setplayerItemInfo(item)
   local itemInfoDescriptText = display.newText(itemInfoGroup,item.describe,display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
   itemInfoGroup.x = display.contentCenterX-220
   updateItemInfoUI()
+ 
 end
 
---非玩家
-local function setNPCItemInfo(item)
-  local itemInfoGroup = display.newGroup()
-  allItemInfoGroup:insert(itemInfoGroup)
-  local itemInfoBgRect = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 100, 40)
-  itemInfoBgRect.x = display.contentCenterX
-  itemInfoBgRect.y = display.contentCenterY
-  local itemInfoIcon = display.newImageRect(itemInfoGroup,item.imagePath, 40, 40)
-  itemInfoIcon.x = display.contentCenterX-65
-  itemInfoIcon.y = display.contentCenterY
-  local itemInfoNameText = display.newText(itemInfoGroup,item.name,display.contentCenterX-15, display.contentCenterY-9, native.systemFont, 14 )
-  local itemInfoDescriptText = display.newText(itemInfoGroup,item.describe,display.contentCenterX-12, display.contentCenterY+5, native.systemFont, 10 )
-  itemInfoGroup.x = display.contentCenterX+220
-  updateNPCItemInfoUI()
-end
 
 local function showFinalMessage()
   finalMessageGroup.isVisible = true
     if(myPlayer.health<=0)then
-      finalMessageText.text = "勝利者"..myNPC.name
+      finalMessageText.text = "勝利者"..myPlayer.name
     end
     if(myNPC.health<=0)then
-      finalMessageText.text = "勝利者"..myPlayer.name
+      finalMessageText.text = "勝利者"..myNPC.name
     end
     if(myNPC.health<=0 and myPlayer.health<=0 )then
       finalMessageText.text = "大家都掛了"
@@ -416,14 +382,12 @@ function battleLog:new(attacker,target,action,valueChange)
       attackSum = 0
       for i=1,#playerItemQueue do
         attackSum = attackSum - playerItemQueue[i].damage
-      end  
+      end
+      
       self.valueChange = attackSum   
     end
     if self.action == "usePotion" then
     end    
-  end
-  function newLog:addDefend(change)
-    self.valueChange = self.valueChange - change 
   end
   function newLog:execute()
     self.action()
@@ -457,7 +421,6 @@ local function getNewItem(character)
 end
 
 local function resetQueue()
-  npcItemQueue={}
   playerItemQueue={}
   allItemInfoGroup:removeSelf()
   allItemInfoGroup = display.newGroup()
@@ -651,7 +614,6 @@ local function onAttackerAreaTap(event)
    getNewItem(myPlayer)
    resetQueue()
    resetPrevSelectedButton()
-   npcHealthText.text = "HP:"..myNPC.health
    npcTurn()
   end
 end
@@ -663,14 +625,12 @@ local function npcDefenceLogic()
   local curDefence = 0
   for i=1,i<=#myNPC.item do
     if(getmetatable(myNPC.item[i]).__index == Armor)then
-      if(curDefence + myNPC.item[i].defence<=curDamage)then
-        table.insert(npcItemQueue,myNPC.item[i])
-        curDefence = curDefence + myNPC.item[i].defence
-        setNPCItemInfo(myNPC.item[i])
-      end
-    end  
+      curDefence = curDefence + myNPC.item[i].
+    end
+  
   end
-  curAction:addDefend(curDefence)
+
+
 end
 
 playerTurn = function()

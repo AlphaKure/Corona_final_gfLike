@@ -651,10 +651,7 @@ local function npcDefenceLogic()
   for i=1,#npcItemQueue do
     print(i..":"..npcItemQueue[i].name) 
   end
-  if curDefence < -curDamage then
-    curAction:addDefend(curDefence)  
-  end
-
+  curAction:addDefend(curDefence)
 end
 
 local function onItemButtonTap(buttonIndex)

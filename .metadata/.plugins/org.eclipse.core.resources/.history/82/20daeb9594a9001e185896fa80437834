@@ -26,7 +26,6 @@ local backGroup
 local mainGroup
 local uiGroup
 local allItemInfoGroup
-local allINPCtemInfoGroup
 local valueBarGroup
 
 local exitButton
@@ -283,13 +282,11 @@ local function hideValueBar()
 end
 
 local function setItemImage(callback)
-  local alltime = 0
     for i=1,#myPlayer.item do
       itemIconRects[i].fill={type = "image", filename = myPlayer.item[i].imagePath}
       transition.fadeIn( itemIconRects[i], { delay = i*250, time = 250,})
-      alltime = alltime +500
     end
-    timer.performWithDelay(alltime,function()
+    timer.performWithDelay(4000,function()
      callback()
      hideMessage()
      end)
@@ -354,17 +351,17 @@ local function updateNPCItemInfoUI(callback)
   if totalHeight > (maxY - minY) then
     local currentY = minY
       for i=1, #npcItemQueue do
-        transition.to( allINPCtemInfoGroup[i], { time=200, y=currentY} )
+        transition.to( allItemInfoGroup[i], { time=200, y=currentY} )
         currentY = currentY + curYDelta
         alltime = alltime+200
       end
     else
       for i=1, #npcItemQueue do
-        transition.to( allINPCtemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
+        transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
         alltime = alltime +200
       end
     end
-     timer.performWithDelay(alltime+1000,function()
+     timer.performWithDelay(alltime+100,function()
      callback()
      hideMessage()
      end)
@@ -391,7 +388,7 @@ end
 --非玩家
 local function setNPCItemInfo(item,callback)
   local itemInfoGroup = display.newGroup()
-  allINPCtemInfoGroup:insert(itemInfoGroup)
+  allItemInfoGroup:insert(itemInfoGroup)
   local itemInfoBgRect = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 100, 40)
   itemInfoBgRect.x = display.contentCenterX
   itemInfoBgRect.y = display.contentCenterY
@@ -449,7 +446,7 @@ function battleLog:new(attacker,target,action,valueChange)
     end    
   end
   function newLog:addDefend(change)
-    self.valueChange = self.valueChange + change 
+    self.valueChange = self.valueChange - change 
   end
   function newLog:execute()
     self.action()
@@ -487,8 +484,6 @@ local function resetQueue()
   playerItemQueue={}
   allItemInfoGroup:removeSelf()
   allItemInfoGroup = display.newGroup()
-  allINPCtemInfoGroup:removeSelf()
-  allINPCtemInfoGroup = display.newGroup()
 end
 --Strategy Pattern處理道具邏輯
 
@@ -651,10 +646,7 @@ local function npcDefenceLogic()
   for i=1,#npcItemQueue do
     print(i..":"..npcItemQueue[i].name) 
   end
-  if curDefence < -curDamage then
-    curAction:addDefend(curDefence)  
-  end
-
+  curAction:addDefend(curDefence)
 end
 
 local function onItemButtonTap(buttonIndex)
@@ -765,14 +757,12 @@ local function initGameUI(sceneGroup)
   allItemInfoGroup = display.newGroup()
   valueBarGroup = display.newGroup()
   finalMessageGroup = display.newGroup()
-  allINPCtemInfoGroup = display.newGroup()
   
   sceneGroup:insert( uiGroup )
   sceneGroup:insert(waitMessage)
   sceneGroup:insert(allItemInfoGroup)
   sceneGroup:insert(valueBarGroup)
   sceneGroup:insert(finalMessageGroup)
-  sceneGroup:insert(allINPCtemInfoGroup)
   
   background = display.newImageRect( uiGroup, "resource/game_background.jpeg", 500, 1000 )
   background.x = display.contentCenterX

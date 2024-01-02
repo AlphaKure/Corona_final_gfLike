@@ -354,17 +354,17 @@ local function updateNPCItemInfoUI(callback)
   if totalHeight > (maxY - minY) then
     local currentY = minY
       for i=1, #npcItemQueue do
-        transition.to( allINPCtemInfoGroup[i], { time=200, y=currentY} )
+        transition.to( allItemInfoGroup[i], { time=200, y=currentY} )
         currentY = currentY + curYDelta
         alltime = alltime+200
       end
     else
       for i=1, #npcItemQueue do
-        transition.to( allINPCtemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
+        transition.to( allItemInfoGroup[i], { time=200, y=minY + (i - 1) * (40 + 5)} )
         alltime = alltime +200
       end
     end
-     timer.performWithDelay(alltime+1000,function()
+     timer.performWithDelay(alltime+500,function()
      callback()
      hideMessage()
      end)
@@ -391,7 +391,7 @@ end
 --非玩家
 local function setNPCItemInfo(item,callback)
   local itemInfoGroup = display.newGroup()
-  allINPCtemInfoGroup:insert(itemInfoGroup)
+  allItemInfoGroup:insert(itemInfoGroup)
   local itemInfoBgRect = display.newImageRect(itemInfoGroup,"resource/game_itemButton.png", 100, 40)
   itemInfoBgRect.x = display.contentCenterX
   itemInfoBgRect.y = display.contentCenterY
@@ -449,7 +449,7 @@ function battleLog:new(attacker,target,action,valueChange)
     end    
   end
   function newLog:addDefend(change)
-    self.valueChange = self.valueChange + change 
+    self.valueChange = self.valueChange - change 
   end
   function newLog:execute()
     self.action()
@@ -651,10 +651,7 @@ local function npcDefenceLogic()
   for i=1,#npcItemQueue do
     print(i..":"..npcItemQueue[i].name) 
   end
-  if curDefence < -curDamage then
-    curAction:addDefend(curDefence)  
-  end
-
+  curAction:addDefend(curDefence)
 end
 
 local function onItemButtonTap(buttonIndex)

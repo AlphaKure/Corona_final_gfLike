@@ -130,21 +130,37 @@ local function effectFunctionTest()
   print("effect test")
 end
 
+local function bloodSword()
+  -- 武器效果 每3回合提升該武器1點攻擊力
+  print('bloodSword effect 啟動')
+end
+
 local itemTemplates = {
    --{id = , type = "Weapon", name = "",dice_amount =,dice_face =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    --{id = , type = "WeaponAdd", name = "",damage =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    --{id = , type = "Armor", name = "",defense =,element =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
    --{id = , type = "Potion", name = "",dice_amount =,dice_face =,type =, value =,rare =, imagePath = "resource/icon/release_v1.2-single_A.png",effect =,describe=}
-   {id = 1, type = "Weapon", name = "weaponTest",dice_amount =1,dice_face =4,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_1.png",effect =nil,describe="123"},
-   {id = 2, type = "Potion", name = "healthPotionTest",dice_amount =1,dice_face =5,recover_type ="health", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
-   {id = 3, type = "Weapon", name = "weaponTest2",dice_amount =2,dice_face =3,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_3.png",effect =nil,describe="123"},
-   {id = 4 ,type = "Armor", name = "armorTest",defense =2,element =nil, value =1,rare =1, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
-   {id = 5, type = "Weapon", name = "weaponTest3",dice_amount =4,dice_face =1,element =nil, value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_5.png",effect =effectFunctionTest,describe="123"},
-   {id = 6 , type = "WeaponAdd", name = "weaponAddTest",damage =2,element =nil, value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_6.png",effect =nil,describe="123"},
-   {id = 7 , type = "Armor", name = "armorTest2",defense =5,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_7.png",effect =nil,describe="123"},
-   {id = 8 , type = "Weapon", name = "weaponElem",dice_amount =1,dice_face =2,element ="fire", value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_8.png",effect =nil,describe="123"},
-   {id = 9, type = "Potion", name = "PPPotionTest",dice_amount =1,dice_face =5,recover_type ="PP", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
-   {id = 10,type = "Armor", name = "armorTest3",defense =4,element ="fire", value =7,rare =2, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
+   {id = 0, type = "Weapon", name = "新手之劍", dice_amount = 1,dice_face = 4,element = nil, value = 1,rare = 1, imagePath = "resource/icon/Barbarian_17.png",effect = nil,describe= "一把普通的劍，不附帶任何屬性"},
+   {id = 1, type = "Weapon", name = "強化之劍", dice_amount = 1,dice_face = 6,element = nil, value = 2,rare = 2, imagePath = "resource/icon/Barbarian_18.png",effect = nil,describe= "一把經過強化的劍，傷害有機會變得更高"},
+   {id = 2, type = "Weapon", name = "詛咒之刃", dice_amount = 2,dice_face = 6,element = nil, value = 4,rare = 4, imagePath = "resource/icon/Barbarian_19.png",effect = nil,describe= "一把受詛咒的刀刃，傷害上限不容小覷"},
+   {id = 3, type = "Weapon", name = "新手之仗", dice_amount = 1,dice_face = 4,element = nil, value = 1,rare = 1, imagePath = "resource/icon/Barbarian_36.png",effect = nil,describe= "一把普通的魔仗，拿來錘人好像有點癢"},
+   {id = 4, type = "Weapon", name = "強化之仗", dice_amount = 2,dice_face = 4,element = nil, value = 3,rare = 3, imagePath = "resource/icon/Barbarian_20.png",effect = nil,describe= "一把經過強化的魔仗，錘起人來有點痛"},
+   {id = 5, type = "Weapon", name = "伐木斧頭", dice_amount = 1,dice_face = 3,element = nil, value = 1,rare = 1, imagePath = "resource/icon/Barbarian_27.png",effect = nil,describe= "一把伐木用的斧頭，由於經常使用已經有點磨損了"},
+   {id = 6, type = "Weapon", name = "大型斧頭", dice_amount = 1,dice_face = 6,element = nil, value = 2,rare = 2, imagePath = "resource/icon/Barbarian_21.png",effect = nil,describe= "全新的伐木斧頭，砍中敵人要害也是很痛的"},
+   {id = 7, type = "Weapon", name = "皇家斧頭", dice_amount = 2,dice_face = 5,element = nil, value = 3,rare = 3, imagePath = "resource/icon/Barbarian_22.png",effect = nil,describe= "一把皇家用的斧頭，威力不容小覷"},
+   {id = 8, type = "Weapon", name = "皇家之劍", dice_amount = 2,dice_face = 5,element = nil, value = 3,rare = 3, imagePath = "resource/icon/Barbarian_26.png",effect = nil,describe= "一把皇家用的劍，威力不容小覷"},
+   {id = 9, type = "Weapon", name = "皇家之矛", dice_amount = 2,dice_face = 5,element = nil, value = 3,rare = 3, imagePath = "resource/icon/Barbarian_23.png",effect = nil,describe= "一把皇家用的矛，威力不容小覷"},
+   {id = 10, type = "Weapon", name = "嗜血之劍", dice_amount = 1,dice_face = 4,element = nil, value = 5,rare = 5, imagePath = "resource/icon/Barbarian_28.png",effect = bloodSword ,describe= "這是一把嗜血的劍，雖然基礎數值不高但會隨著回合數慢慢提升攻擊力。"},
+   {id = 11, type = "Weapon", name = "長劍", dice_amount = 1,dice_face = 5,element = nil, value = 2,rare = 2, imagePath = "resource/icon/Barbarian_29.png",effect = nil ,describe= "這是一把長劍，不附帶任何屬性"},
+   {id = 12, type = "Weapon", name = "王者之劍", dice_amount = 3,dice_face = 6,element = nil, value = 5,rare = 5, imagePath = "resource/icon/Barbarian_31.png",effect = nil ,describe= "這是一把王者之劍，擁有極高的攻擊力"},
+   {id = 13, type = "Weapon", name = "骨劍", dice_amount = 1,dice_face = 3,element = nil, value = 1,rare = 1, imagePath = "resource/icon/Barbarian_38.png",effect = nil ,describe= "一把骨頭製成的劍，傷害並不高"},
+   {id = 14, type = "Weapon", name = "餐刀", dice_amount = 1,dice_face = 2,element = nil, value = 1,rare = 1, imagePath = "resource/icon/BloodMage_7.png",effect = nil ,describe= "一把餐刀，老實說誰會拿它來戰鬥"},
+   {id = 15, type = "Potion", name = "healthPotionTest",dice_amount =1,dice_face =5,recover_type ="health", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
+   {id = 16 ,type = "Armor", name = "armorTest",defense =2,element =nil, value =1,rare =1, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
+   {id = 17 , type = "WeaponAdd", name = "weaponAddTest",damage =2,element =nil, value =5,rare =2, imagePath = "resource/icon/release_v1.2-single_6.png",effect =nil,describe="123"},
+   {id = 18 , type = "Armor", name = "armorTest2",defense =5,element =nil, value =3,rare =1, imagePath = "resource/icon/release_v1.2-single_7.png",effect =nil,describe="123"},
+   {id = 19, type = "Potion", name = "PPPotionTest",dice_amount =1,dice_face =5,recover_type ="PP", value =5,rare =1, imagePath = "resource/icon/release_v1.2-single_2.png",effect =nil,describe="123"},
+   {id = 20,type = "Armor", name = "armorTest3",defense =4,element ="fire", value =7,rare =2, imagePath = "resource/icon/release_v1.2-single_4.png",effect =nil,describe="123"},
 }
 
 -- 工廠函數，根據類型創建對應的物品

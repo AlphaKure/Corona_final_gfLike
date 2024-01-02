@@ -189,6 +189,8 @@ local itemTemplates = {
    {id = 43, type = "Potion", name = "中女亞沙漏?",dice_amount =1,dice_face =5,recover_type ="health",value =5,rare =1,effect =nil,describe="回復1d5的生命值", imagePath = "resource/icon/release_v1.2-single_34.png"},
    {id = 44, type = "Armor", name = "暗黑護甲", defence =4,element =nil, value =4,rare =1,effect =nil,describe="提供玩家4點護甲，雖然很黑" , imagePath = "resource/icon/release_v1.2-single_35.png"},
    {id = 45, type = "WeaponAdd", name = "冰之附魔", damage =1,element =nil, value =1,rare =1,effect =nil,describe="提升武器1點冰屬性傷害", imagePath = "resource/icon/release_v1.2-single_36.png"},
+   {id = 46, type = "Potion", name = "冰之回復", dice_amount =1, dice_face =3,recover_type ="health", value =1,rare =1,effect =nil,describe="回復1d3的生命值", imagePath = "resource/icon/release_v1.2-single_38.png"},
+   {id = 47, type = "Potion", name = "永恆暴風雪", dice_amount =1,dice_face =6,recover_type ="attack",value =4,rare =4,effect =nil,describe="對敵人造成1d6傷害", imagePath = "resource/icon/release_v1.2-single_39.png"},
 }
 
 -- 工廠函數，根據類型創建對應的物品

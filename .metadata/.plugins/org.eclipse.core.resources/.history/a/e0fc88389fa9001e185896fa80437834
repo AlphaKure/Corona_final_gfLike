@@ -562,11 +562,10 @@ function selectWeaponStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         end
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
+        rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
         curAction.target = myNPC
-        rollDice(myPlayer.item[buttonIndex])
         curAction:update()
-        
         table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then

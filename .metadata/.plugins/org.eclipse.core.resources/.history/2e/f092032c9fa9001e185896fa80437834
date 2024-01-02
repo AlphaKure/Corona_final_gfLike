@@ -501,6 +501,7 @@ local function rollDice(item)
   for i=1,item.amount do
     damageSum = damageSum +math.random(1, item.face)
   end
+  print("33:"..curAction.action)
   if(curAction.action == "usePotion")then
     item.recover = damageSum
     print("usePotion..."..damageSum)
@@ -562,11 +563,10 @@ function selectWeaponStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         end
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
+        rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
         curAction.target = myNPC
-        rollDice(myPlayer.item[buttonIndex])
         curAction:update()
-        
         table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then

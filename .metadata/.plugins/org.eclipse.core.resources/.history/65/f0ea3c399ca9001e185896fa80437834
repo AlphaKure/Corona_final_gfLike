@@ -121,8 +121,6 @@ function Potion:new(name,dice_amount,dice_face,recover_type,value,rare,imagePath
     newPotion.amount = dice_amount
     newPotion.face = dice_face
     newPotion.recover_type = recover_type
-    newPotion.recover =0
-    newPotion.damage =0
     setmetatable(newPotion, { __index = Potion })
     return newPotion
 end
@@ -479,7 +477,7 @@ function battleLog:new(attacker,target,action,valueChange)
       self.valueChange = attackSum   
     end
     if self.action == "usePotion" then
-    self.valueChange =self.valueChange + playerItemQueue[1].recover
+    self.valueChange =self.valueChange + playerItemQueue[i].recover
     end    
   end
   function newLog:addDefend(change)
@@ -503,7 +501,7 @@ local function rollDice(item)
   end
   if(curAction.action == "usePotion")then
     item.recover = damageSum
-    print("usePotion..."..damageSum)
+    
   else
     item.damage = damageSum    
   end
@@ -529,6 +527,7 @@ local function resetQueue()
   allItemInfoGroup = display.newGroup()
   allINPCtemInfoGroup:removeSelf()
   allINPCtemInfoGroup = display.newGroup()
+  print(#allItemInfoGroup)
 end
 --Strategy Pattern處理道具邏輯
 
@@ -562,11 +561,10 @@ function selectWeaponStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
         end
         showValueBar(myPlayer.item[buttonIndex].amount.."D"..myPlayer.item[buttonIndex].face)
+        rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
         curAction.target = myNPC
-        rollDice(myPlayer.item[buttonIndex])
         curAction:update()
-        
         table.insert(preSelectedItemIndex,buttonIndex)
       end
       if(whosTurn== myNPC)then
@@ -642,15 +640,15 @@ function selectPotionStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
           
         end
-      if(myPlayer.item[buttonIndex].recover_type == "health")then
+      if(myPlayer.item[buttonIndex].recover_type == "recover")then
+        rollDice(myPlayer.item[buttonIndex])
         curAction.action = "usePotion"
         curAction.target = myPlayer
-        rollDice(myPlayer.item[buttonIndex])
       end
       if(myPlayer.item[buttonIndex].recover_type == "attack")then
+        rollDice(myPlayer.item[buttonIndex])
         curAction.action = "attack"
         curAction.target = myNPC
-        rollDice(myPlayer.item[buttonIndex])
       end        
         
       curAction:update()
@@ -750,15 +748,13 @@ local function onAttackerAreaTap(event)
    overlay.alpha = 0
    showAttackIcon.isVisible = true
    npcDefenceLogic()
-   
    curAction.target:adjustHealth(curAction.valueChange)
    npcHealthText.text = "HP:"..myNPC.health
    playerHealthText.text = "HP:"..myPlayer.health
    getNewItem(myPlayer)
    
    resetPrevSelectedButton()
-   allItemInfoGroup:removeSelf()
-   allItemInfoGroup = display.newGroup()
+   
    npcTurn()
   end
 end

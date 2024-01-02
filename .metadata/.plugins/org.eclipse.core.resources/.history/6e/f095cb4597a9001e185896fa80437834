@@ -601,9 +601,6 @@ function selectPotionStrategy:new(buttonIndex)
           table.insert(playerItemQueue, myPlayer.item[buttonIndex])
           
         end
-      rollDice(myPlayer.item[buttonIndex])
-      curAction.action = "attack"
-
       hideValueBar()
       curAction.action = "usePotion"
       curAction.target = myPlayer
